@@ -54,6 +54,23 @@ builder.Services.AddSingleton<Supabase.Client>(_ =>
 });
 
 // ============================================
+// CONFIGURAÇÃO DA IA (Groq + Services)
+// ============================================
+
+builder.Services.AddHttpClient<OpenDoors.Api.Services.GroqService>();
+
+builder.Services.AddScoped<OpenDoors.Api.Services.GroqService>(sp =>
+{
+    var http = sp.GetRequiredService<IHttpClientFactory>().CreateClient();
+    var config = sp.GetRequiredService<IConfiguration>();
+    return new OpenDoors.Api.Services.GroqService(config, http);
+});
+
+builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarCurriculoService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarTesteService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.GerarScoreService>();
+
+// ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
 // ============================================
 

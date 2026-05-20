@@ -151,6 +151,74 @@ namespace OpenDoors.Api.Controllers
             }
         }
 
+        // POST /api/matches
+        // Endpoint usado pela IA (próxima etapa) pra gravar resultados de análise
+        [HttpPost]
+        public async Task<IActionResult> Criar([FromBody] CreateMatchDto dto)
+        {
+            try
+            {
+                if (dto.EstudanteId == Guid.Empty || dto.EmpresaId == Guid.Empty || dto.VagaId <= 0)
+                    return BadRequest(new { erro = "EstudanteId, VagaId e EmpresaId são obrigatórios" });
+
+                if (dto.ScoreTotal < 0 || dto.ScoreTotal > 100)
+                    return BadRequest(new { erro = "ScoreTotal deve estar entre 0 e 100" });
+
+                var novo = new Match
+                {
+                    EstudanteId = dto.EstudanteId,
+                    VagaId = dto.VagaId,
+                    EmpresaId = dto.EmpresaId,
+                    ScoreTotal = dto.ScoreTotal,
+                    ScoreCurriculo = dto.ScoreCurriculo,
+                    ScoreVocacional = dto.ScoreVocacional,
+                    ScoreHabilidades = dto.ScoreHabilidades,
+                    PontosFortes = dto.PontosFortes,
+                    PontosFracos = dto.PontosFracos,
+                    Justificativa = dto.Justificativa
+                };
+
+                var resultado = await _supabase.From<Match>().Insert(novo);
+
+                if (resultado.Models == null || resultado.Models.Count == 0)
+                    return StatusCode(500, new { erro = "Falha ao criar match" });
+
+                var criado = MapearParaDto(resultado.Models[0]);
+                return CreatedAtAction(nameof(BuscarPorId), new { id = criado.Id }, criado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = ex.Message });
+            }
+        }
+
+        // DELETE /api/matches/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Deletar(int id)
+        {
+            try
+            {
+                var existente = await _supabase
+                    .From<Match>()
+                    .Where(m => m.Id == id)
+                    .Single();
+
+                if (existente == null)
+                    return NotFound(new { mensagem = "Match não encontrado" });
+
+                await _supabase
+                    .From<Match>()
+                    .Where(m => m.Id == id)
+                    .Delete();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = ex.Message });
+            }
+        }
+
         private static MatchDto MapearParaDto(Match m)
         {
             return new MatchDto

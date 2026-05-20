@@ -123,6 +123,96 @@ namespace OpenDoors.Api.Controllers
             }
         }
 
+        // POST /api/candidaturas
+        [HttpPost]
+        public async Task<IActionResult> Criar([FromBody] CreateCandidaturaDto dto)
+        {
+            try
+            {
+                if (dto.EstudanteId == Guid.Empty)
+                    return BadRequest(new { erro = "EstudanteId é obrigatório" });
+
+                if (dto.VagaId <= 0)
+                    return BadRequest(new { erro = "VagaId é obrigatório" });
+
+                if (dto.EmpresaId == Guid.Empty)
+                    return BadRequest(new { erro = "EmpresaId é obrigatório" });
+
+                var nova = new Candidatura
+                {
+                    EstudanteId = dto.EstudanteId,
+                    VagaId = dto.VagaId,
+                    EmpresaId = dto.EmpresaId,
+                    Status = dto.Status ?? "pendente",
+                    CartaApresentacao = dto.CartaApresentacao,
+                    VisualizadoEmpresa = false
+                };
+
+                var resultado = await _supabase.From<Candidatura>().Insert(nova);
+
+                if (resultado.Models == null || resultado.Models.Count == 0)
+                    return StatusCode(500, new { erro = "Falha ao criar candidatura" });
+
+                var criada = MapearParaDto(resultado.Models[0]);
+                return CreatedAtAction(nameof(BuscarPorId), new { id = criada.Id }, criada);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = ex.Message });
+            }
+        }
+
+        // PUT /api/candidaturas/{id}/status — atualiza só o status (caso de uso comum)
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> AtualizarStatus(int id, [FromBody] string novoStatus)
+        {
+            try
+            {
+                var existente = await _supabase
+                    .From<Candidatura>()
+                    .Where(c => c.Id == id)
+                    .Single();
+
+                if (existente == null)
+                    return NotFound(new { mensagem = "Candidatura não encontrada" });
+
+                existente.Status = novoStatus;
+                var resultado = await existente.Update<Candidatura>();
+                return Ok(MapearParaDto(resultado.Models[0]));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = ex.Message });
+            }
+        }
+
+        // DELETE /api/candidaturas/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Deletar(int id)
+        {
+            try
+            {
+                var existente = await _supabase
+                    .From<Candidatura>()
+                    .Where(c => c.Id == id)
+                    .Single();
+
+                if (existente == null)
+                    return NotFound(new { mensagem = "Candidatura não encontrada" });
+
+                await _supabase
+                    .From<Candidatura>()
+                    .Where(c => c.Id == id)
+                    .Delete();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = ex.Message });
+            }
+        }
+
         private static CandidaturaDto MapearParaDto(Candidatura c)
         {
             return new CandidaturaDto
