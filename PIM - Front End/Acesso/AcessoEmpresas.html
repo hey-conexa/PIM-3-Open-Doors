@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Doors — Empresas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="acesso.css">
+</head>
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="../../OpenDoors.html" class="back-btn" aria-label="Voltar para a página principal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Voltar
+      </a>
+      <a href="../../OpenDoors.html" class="logo-link">
+        <img src="../../images/open-doors-icon.png" alt="Open Doors" class="logo-img">
+      </a>
+    </div>
+    <div class="navbar-right">
+      <span class="page-badge">Empresa</span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Alternar modo escuro">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/> <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/> <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/> <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/> <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <span>Modo escuro</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══ LAYOUT ══ -->
+  <div class="page-layout">
+
+    <!-- PAINEL LATERAL -->
+    <aside class="brand-panel">
+      <h1 class="brand-headline">
+        Os melhores<br>talentos<br><span>estão aqui.</span>
+      </h1>
+      <p class="brand-sub">
+        Cadastre sua empresa e conecte-se a estudantes qualificados prontos para contribuir com o seu time.
+      </p>
+      <div class="brand-stats">
+        <div class="stat">
+          <div class="stat-value">+12k</div>
+          <div class="stat-label">Estudantes ativos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">98%</div>
+          <div class="stat-label">Satisfação das empresas</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">340+</div>
+          <div class="stat-label">Empresas parceiras</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">48h</div>
+          <div class="stat-label">Retorno médio</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main">
+      <div class="form-container">
+
+        <!-- CADASTRO -->
+        <div class="screen active" id="screen-register">
+          <h2 class="screen-title">Cadastro de empresa</h2>
+          <p class="screen-sub">
+            Preencha os dados abaixo. Nossa equipe entrará em contato em até 48 horas para dar continuidade ao processo.
+          </p>
+
+          <div class="fields">
+            <p class="section-label">Dados da empresa</p>
+
+            <div class="field">
+              <label for="co-name">Nome da empresa ou CNPJ</label>
+              <input type="text" id="co-name" placeholder="Razão social ou CNPJ" autocomplete="organization">
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="co-cep">CEP</label>
+                <input type="text" id="co-cep" placeholder="00000-000" maxlength="9"
+                       oninput="maskCEP(this)" onblur="fetchCEP()">
+              </div>
+              <div class="field">
+                <label for="co-city">Cidade</label>
+                <input type="text" id="co-city" placeholder="Preenchida automaticamente" readonly>
+              </div>
+            </div>
+
+            <p class="section-label">Responsável pelo contato</p>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="co-contact">Nome completo</label>
+                <input type="text" id="co-contact" placeholder="Quem devemos contatar" autocomplete="name">
+              </div>
+              <div class="field">
+                <label for="co-role">Cargo</label>
+                <input type="text" id="co-role" placeholder="Ex: Gerente de RH">
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="co-email">E-mail corporativo</label>
+                <input type="email" id="co-email" placeholder="contato@empresa.com" autocomplete="email">
+              </div>
+              <div class="field">
+                <label for="co-phone">Telefone</label>
+                <input type="tel" id="co-phone" placeholder="(00) 00000-0000" maxlength="15"
+                       oninput="maskPhone(this)">
+              </div>
+            </div>
+
+            <div class="info-box">
+              Suas informações são usadas somente para contato e exibição às candidaturas relevantes.
+              Nenhum dado é compartilhado com terceiros sem seu consentimento.
+            </div>
+
+            <div id="co-terms-wrap">
+              <label class="check-field">
+                <input type="checkbox" id="co-terms">
+                <span>
+                  Li e concordo com os <a href="#" target="_blank">Termos de Uso para Empresas</a>
+                  e a <a href="#" target="_blank">Política de Privacidade</a> do Open Doors.
+                </span>
+              </label>
+            </div>
+
+            <button class="btn-primary mt-sm" onclick="companyRegister()">Enviar cadastro</button>
+          </div>
+        </div>
+
+        <!-- SUCESSO -->
+        <div class="success-screen" id="screen-success">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2>Cadastro recebido!</h2>
+          <p>Obrigado pelo interesse. Nossa equipe analisará seu cadastro e entrará em contato em breve.</p>
+          <div class="success-meta">
+            <div><strong>Empresa</strong> <span id="s-company">—</span></div>
+            <div><strong>Contato</strong> <span id="s-contact">—</span></div>
+            <div><strong>Cargo</strong>   <span id="s-role">—</span></div>
+            <div><strong>E-mail</strong>  <span id="s-email">—</span></div>
+            <div><strong>Cidade</strong>  <span id="s-city">—</span></div>
+          </div>
+          <button class="btn-ghost" style="max-width:240px; margin:0 auto;" onclick="showScreen('screen-register')">
+            Editar cadastro
+          </button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="acesso-shared.js"></script>
+  <script src="empresa.js"></script>
+</body>
+</html>

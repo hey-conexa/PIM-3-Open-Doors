@@ -1,0 +1,428 @@
+/* ESTILO GERAL DO SITE */
+
+*, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+}
+
+:root {
+    --blue:        #087CA7;
+    --blue-dark:   #055a7a;
+    --blue-light:  #ecfffd;
+    --accent:      #0065FF;
+    --gold:        #f5a623;
+    --white:       #FAFDF6;
+    --gray-100:    #f4f6f8;
+    --gray-200:    #e2e8ed;
+    --gray-400:    #9aa8b4;
+    --gray-700:    #3a4a56;
+    --text:        #1c2b35;
+    --radius-sm:   8px;
+    --radius-md:   16px;
+    --radius-lg:   28px;
+    --shadow-sm:   0 2px 8px rgba(8,124,167,.10);
+    --shadow-md:   0 8px 32px rgba(8,124,167,.14);
+    --shadow-lg:   0 20px 60px rgba(8,124,167,.18);
+    --nav-h:       64px;
+    --transition:  0.3s cubic-bezier(.4,0,.2,1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: "DM Sans", sans-serif;
+    font-weight: 400;
+    color: var(--text);
+    background: var(--white);
+    overflow-x: hidden;
+    padding-top: var(--nav-h);
+}
+
+
+/* PAGINA PRINCIPAL - HOME PAGE */
+
+/* BARRA DE NAVEGAÇÃO */
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.logo-img {
+    height: 160px;
+    padding-top: 12px;
+    width: auto;
+}
+
+.navbar {
+    position: fixed;
+    top: 0; left: 0; width: 100%;
+    height: var(--nav-h);
+    background:#e0f7ff;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(20px, 5vw, 60px);
+    z-index: 1000;
+}
+
+.menu-links {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    gap: 4px;
+}
+
+.menu-links li a {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    letter-spacing: 0.01em;
+}
+
+.menu-links li a:hover {
+    color: var(--blue);
+    background: var(--blue-light);
+}
+
+#nav-check { display: none; }
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+}
+
+.hamburger span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--blue-dark);
+    border-radius: 2px;
+    transition: var(--transition);
+}
+
+#nav-check:checked ~ .hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+#nav-check:checked ~ .hamburger span:nth-child(2) { opacity: 0; }
+#nav-check:checked ~ .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+
+/* TOPO DO SITE */
+
+.topo-site {
+    min-height: calc(100vh - var(--nav-h));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(40px, 8vw, 100px) clamp(20px, 5vw, 60px);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.topo-site::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(8,124,167,.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 10% 80%, rgba(0,101,255,.05) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.topo-site h1 {
+    font-family: "Oswald", sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--text);
+    max-width: 800px;
+    margin: 0 auto 20px;
+    letter-spacing: -0.01em;
+}
+
+.topo-site h1 em {
+    font-style: normal;
+    color: var(--blue);
+}
+
+.msg-sub {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    color: var(--gray-400);
+    max-width: 480px;
+    margin: 0 auto 52px;
+    line-height: 1.65;
+}
+
+/* BOTOES TOPO */
+
+.botoes-topo {
+    display: flex;
+    gap: 5px;
+}
+
+.botoes-topo a{
+    flex: 1;
+}
+
+.topo-site .botoes-topo button {
+    padding: 210px 210px;
+    border: none;
+    width: 100%;
+    height: 550px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 20px;
+    flex-direction: column;
+    transition: padding 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.btn-top__title {
+    font-family: "Oswald", sans-serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 600;
+    line-height: 1.15;
+    margin-bottom: 10px;
+}
+
+.botoes-topo button span {
+    display: block;
+    font-size: 14px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease, margin-top 0.3s ease;
+    margin-top: 0;
+}
+
+.botoes-topo button:hover {
+    padding-bottom: 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.botoes-topo button:hover span {
+    max-height: 100px;
+    opacity: 1;
+    margin-top: 12px;
+}
+
+.botoes-topo button img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    opacity: 0.4;
+    border-radius: 15px;
+}
+
+.botoes-topo button span,
+.botoes-topo button {
+    z-index: 1;
+    position: relative;
+}
+
+.btn-top__desc {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    opacity: 0.75;
+}
+
+/* ── MURAL ── */
+.mural {
+    padding: clamp(48px, 8vw, 96px) clamp(20px, 5vw, 60px);
+}
+
+.mural-carousel {
+    position: relative;
+    width: 100%;
+    height: clamp(240px, 38vw, 420px);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    background: var(--gray-100);
+}
+
+.mural-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.55s cubic-bezier(.77,0,.175,1);
+}
+
+.mural-slide {
+    min-width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 10px;
+}
+
+.mural-slide--empty {
+    background: var(--gray-100);
+    border: 2px dashed var(--gray-200);
+    color: var(--gray-400);
+}
+.mural-slide--empty span   { font-size: 2.2rem; opacity: 0.5; }
+.mural-slide--empty strong { font-size: 0.95rem; font-family: "DM Sans", sans-serif; }
+.mural-slide--empty small  { font-size: 0.78rem; opacity: 0.7; }
+
+/* Mural arrows */
+.mural-arrow {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,.9);
+    border: 1px solid var(--gray-200);
+    cursor: pointer;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    color: var(--gray-700);
+    box-shadow: var(--shadow-sm);
+    z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+}
+.mural-arrow:hover   { background: var(--blue); color: #fff; border-color: var(--blue); }
+.mural-arrow--left   { left: 14px; }
+.mural-arrow--right  { right: 14px; }
+
+/* Mural bottom controls */
+.mural-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.mural-dots { display: flex; gap: 6px; }
+
+.mural-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.mural-dot--active { background: var(--blue); transform: scale(1.3); }
+
+.mural-thumbs {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+}
+
+.mural-thumb {
+    width: 100px; height: 54px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--gray-200);
+    background: var(--gray-100);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 600;
+    color: var(--gray-400);
+    font-family: "DM Sans", sans-serif;
+    transition: var(--transition);
+}
+.mural-thumb:hover        { transform: scale(1.04); border-color: var(--blue); }
+.mural-thumb--active      { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+
+/* ── APOIADORES ── */
+.apoiadores {
+    padding: clamp(40px, 6vw, 72px) 0;
+    background: var(--gray-100);
+}
+
+.apoiadores-inner {
+    padding: 0 clamp(20px, 5vw, 60px);
+}
+
+.carousel-wrapper {
+    overflow: hidden;
+    width: 100%;
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.carousel-imagens {
+    display: flex;
+    gap: 16px;
+}
+
+.carousel-imagens img {
+    min-width: 260px;
+    height: 110px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    opacity: 0.85;
+    transition: var(--transition);
+}
+.carousel-imagens img:hover { opacity: 1; }
+
+
+/* ── FOOTER ── */
+.footer-strip {
+    padding: 28px clamp(20px, 5vw, 60px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--gray-200);
+}
+.footer-strip p { font-size: 0.82rem; color: var(--gray-400); }
+.footer-strip a { font-size: 0.82rem; color: var(--blue); text-decoration: none; }
+
+.footer-links { display: flex; gap: 20px; }
+
+/* FIM DA PAGINA PRINCIPAL - HOME PAGE */
+
+
+/* ── RESPONSIVIDADE ── */
+
+/* NAVBAR */
+@media (max-width: 768px) {
+    .hamburger { display: flex; }
+
+    .menu-links {
+        display: none;
+        position: fixed;
+        top: var(--nav-h);
+        left: 0; right: 0;
+        background: var(--white);
+        border-bottom: 1px solid var(--gray-200);
+        flex-direction: column;
+        padding: 16px 0 24px;
+        gap: 0;
+        box-shadow: var(--shadow-md);
+    }
+    .menu-links li a {
+        display: block;
+        padding: 14px 32px;
+        font-size: 1rem;
+        border-radius: 0;
+    }
+    #nav-check:checked ~ .menu-links { display: flex; }
+
+ /* HOME PAGE */
+
+    .topo-site { min-height: auto; padding-top: 48px; padding-bottom: 48px; }
+    .botoes-topo button{ grid-template-columns: 1fr; max-width: 460px; }
+    .btn-top { min-height: 180px; }
+
+    .mural-thumbs { display: none; }
+}
