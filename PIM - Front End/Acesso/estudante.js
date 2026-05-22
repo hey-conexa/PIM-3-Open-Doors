@@ -3,23 +3,24 @@
 let mockOTP = '';
 
 
-// ── LOGIN SOCIAL 
+// LOGIN SOCIAL 
 function socialLogin(provider) {
   alert(`Redirecionando para autenticação via ${provider}.\n(Integração real requer o SDK do provedor.)`);
 }
 
 
-// ── MOSTRAR / OCULTAR SENHA
+// MOSTRAR / OCULTAR SENHA 
 function togglePw(inputId, btn) {
-  const input   = document.getElementById(inputId);
+  const input    = document.getElementById(inputId);
   const isHidden = input.type === 'password';
   input.type = isHidden ? 'text' : 'password';
   btn.querySelector('.icon-eye').style.display     = isHidden ? 'none'  : 'block';
   btn.querySelector('.icon-eye-off').style.display = isHidden ? 'block' : 'none';
+  btn.setAttribute('aria-label', isHidden ? 'Ocultar senha' : 'Mostrar senha');
 }
 
 
-// ── FORÇA DA SENHA
+// FORÇA DA SENHA 
 function checkStrength(input) {
   const pw = input.value;
   let score = 0;
@@ -47,7 +48,7 @@ function checkStrength(input) {
 }
 
 
-// ── OTP 
+// OTP MODAL
 function otpNext(el, idx) {
   el.value = el.value.replace(/\D/g, '');
   const digits = document.querySelectorAll('#otp-overlay .otp-digit');
@@ -59,22 +60,45 @@ function openOTPModal(email) {
   console.log('[DEV] OTP simulado:', mockOTP);
 
   document.getElementById('otp-email-target').textContent = email;
-  document.getElementById('otp-overlay').classList.add('open');
-  document.querySelectorAll('#otp-overlay .otp-digit').forEach(d => (d.value = ''));
-  document.querySelectorAll('#otp-overlay .otp-digit')[0].focus();
+
+  const overlay = document.getElementById('otp-overlay');
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+
+  const digits = document.querySelectorAll('#otp-overlay .otp-digit');
+  digits.forEach(d => (d.value = ''));
+  setTimeout(() => digits[0].focus(), 50);
 }
 
 function closeOTPModal() {
-  document.getElementById('otp-overlay').classList.remove('open');
+  const overlay = document.getElementById('otp-overlay');
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+
+  document.querySelector('#screen-login .btn-primary')?.focus();
 }
 
 function verifyOTP() {
   const code = [...document.querySelectorAll('#otp-overlay .otp-digit')].map(d => d.value).join('');
   if (code === mockOTP || code === '123456') {
     closeOTPModal();
+
+    try {
+      const email = document.getElementById('login-email').value.trim();
+      loginAsStudent(email); 
+    } catch (e) {}
     showSuccess('Login confirmado!', 'Identidade verificada com sucesso. Bem-vindo(a) de volta ao Open Doors!', 'login');
   } else {
-    alert('Código incorreto. Tente novamente.');
+
+    const errEl = document.createElement('span');
+    errEl.setAttribute('role', 'alert');
+    errEl.style.cssText = 'font-size:11px;color:var(--error);display:block;text-align:center;margin-top:4px;';
+    errEl.textContent = 'Código incorreto. Tente novamente.';
+    const existing = document.querySelector('#otp-overlay .otp-alert');
+    if (existing) existing.remove();
+    errEl.className = 'otp-alert';
+    document.querySelector('.otp-row').after(errEl);
+    document.querySelectorAll('#otp-overlay .otp-digit')[0].focus();
   }
 }
 
@@ -85,12 +109,10 @@ function resendCode() {
 }
 
 
-// ── SUCESSO 
 function showSuccess(title, msg, flow) {
   document.getElementById('success-title').textContent = title;
   document.getElementById('success-msg').textContent   = msg;
 
-  // Esconde ambos os grupos e exibe o correto
   document.getElementById('success-actions-login').style.display    = 'none';
   document.getElementById('success-actions-register').style.display = 'none';
   document.getElementById('success-actions-reset').style.display    = 'none';
@@ -103,31 +125,54 @@ function showSuccess(title, msg, flow) {
   document.getElementById(which).style.display = 'flex';
 
   showScreen('screen-success');
+
+
+  const liveEl = document.getElementById('a11y-live') || (() => {
+    const el = document.createElement('div');
+    el.id = 'a11y-live';
+    el.setAttribute('aria-live', 'polite');
+    el.setAttribute('aria-atomic', 'true');
+    el.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);';
+    document.body.appendChild(el);
+    return el;
+  })();
+  liveEl.textContent = title + '. ' + msg;
 }
 
 
-// ── LOGIN 
+// LOGIN 
 function studentLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pw    = document.getElementById('login-pw').value;
+
+  clearErrors();
 
   if (!email || !pw)
     return showError('login-email', 'Preencha e-mail e senha.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return showError('login-email', 'E-mail inválido.');
 
-  clearErrors();
-  openOTPModal(email);
+  const btn = document.querySelector('#screen-login .btn-primary');
+  btn.disabled = true;
+  btn.textContent = 'Verificando...';
+  btn.setAttribute('aria-busy', 'true');
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+    btn.removeAttribute('aria-busy');
+    openOTPModal(email);
+  }, 700);
 }
 
 
-// ── CEP (ViaCEP) 
+// CEP (ViaCEP) 
 async function fetchCEP(rawVal) {
   const cep = rawVal.replace(/\D/g, '');
   if (cep.length !== 8) return;
 
   const spinner = document.getElementById('cep-spinner');
-  spinner.style.display = 'block';
+  if (spinner) spinner.style.display = 'block';
 
   try {
     const res  = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
@@ -139,22 +184,31 @@ async function fetchCEP(rawVal) {
       document.getElementById('reg-cidade').value     = data.localidade || '';
       document.getElementById('reg-estado').value     = data.uf         || '';
 
-      // Torna editáveis apenas se preenchidos pela API
-      ['reg-cidade','reg-estado'].forEach(id => {
-        document.getElementById(id).readOnly = !!document.getElementById(id).value;
+      ['reg-cidade', 'reg-estado'].forEach(id => {
+        const el = document.getElementById(id);
+        el.readOnly = !!el.value;
       });
     } else {
-      showError('reg-cep', 'CEP não encontrado.');
+
+      ['reg-cidade', 'reg-estado', 'reg-logradouro', 'reg-bairro'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ''; el.readOnly = false; }
+      });
+      showError('reg-cep', 'CEP não encontrado. Preencha o endereço manualmente.');
     }
   } catch (e) {
-    // falha silenciosa; usuário preenche manualmente
+    ['reg-cidade', 'reg-estado', 'reg-logradouro', 'reg-bairro'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.value = ''; el.readOnly = false; el.placeholder = 'Preencha manualmente'; }
+    });
+    showError('reg-cep', 'Não foi possível buscar o CEP. Preencha o endereço manualmente.');
   } finally {
-    spinner.style.display = 'none';
+    if (spinner) spinner.style.display = 'none';
   }
 }
 
 
-// ── BUSCA — INSTITUIÇÃO 
+// BUSCA — INSTITUIÇÃO 
 const INSTITUICOES = [
   'USP – Universidade de São Paulo',
   'UNICAMP – Universidade Estadual de Campinas',
@@ -191,17 +245,13 @@ const INSTITUICOES = [
 function searchInst(query) {
   const dropdown = document.getElementById('inst-dropdown');
   const q = query.trim().toLowerCase();
-
   if (!q) { dropdown.classList.remove('open'); return; }
-
-  const matches = INSTITUICOES
-    .filter(i => i.toLowerCase().includes(q))
-    .slice(0, 8);
-
+  const matches = INSTITUICOES.filter(i => i.toLowerCase().includes(q)).slice(0, 8);
   renderDropdown(dropdown, matches, 'reg-instituicao', 'inst-dropdown');
 }
 
-// ── BUSCA — CURSO 
+
+// BUSCA — CURSO
 const CURSOS = [
   'Administração', 'Agronomia', 'Análise e Desenvolvimento de Sistemas',
   'Arquitetura e Urbanismo', 'Automação Industrial', 'Biologia',
@@ -224,29 +274,28 @@ const CURSOS = [
 function searchCurso(query) {
   const dropdown = document.getElementById('curso-dropdown');
   const q = query.trim().toLowerCase();
-
   if (!q) { dropdown.classList.remove('open'); return; }
-
-  const matches = CURSOS
-    .filter(c => c.toLowerCase().includes(q))
-    .slice(0, 8);
-
+  const matches = CURSOS.filter(c => c.toLowerCase().includes(q)).slice(0, 8);
   renderDropdown(dropdown, matches, 'reg-curso', 'curso-dropdown');
 }
 
-// Helper genérico de dropdown
+
 function renderDropdown(dropdown, items, inputId, dropdownId) {
   dropdown.innerHTML = '';
 
   if (!items.length) {
     const li = document.createElement('li');
-    li.className = 'no-result';
+    li.className   = 'no-result';
     li.textContent = 'Nenhum resultado encontrado';
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-disabled', 'true');
     dropdown.appendChild(li);
   } else {
-    items.forEach(item => {
+    items.forEach((item, i) => {
       const li = document.createElement('li');
       li.textContent = item;
+      li.setAttribute('role', 'option');
+      li.setAttribute('id', `${dropdownId}-opt-${i}`);
       li.addEventListener('mousedown', () => {
         document.getElementById(inputId).value = item;
         dropdown.classList.remove('open');
@@ -255,10 +304,11 @@ function renderDropdown(dropdown, items, inputId, dropdownId) {
     });
   }
   dropdown.classList.add('open');
+  dropdown.setAttribute('role', 'listbox');
 }
 
 
-// ── CADASTRO 
+// CADASTRO 
 function studentRegister() {
   const name  = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
@@ -266,15 +316,13 @@ function studentRegister() {
   const dob   = document.getElementById('reg-dob').value;
   const phone = document.getElementById('reg-phone').value.trim();
 
-  // Endereço
-  const cep          = document.getElementById('reg-cep').value.trim();
-  const logradouro   = document.getElementById('reg-logradouro').value.trim();
-  const numero       = document.getElementById('reg-numero').value.trim();
-  const bairro       = document.getElementById('reg-bairro').value.trim();
-  const cidade       = document.getElementById('reg-cidade').value.trim();
-  const estado       = document.getElementById('reg-estado').value.trim();
+  const cep        = document.getElementById('reg-cep').value.trim();
+  const logradouro = document.getElementById('reg-logradouro').value.trim();
+  const numero     = document.getElementById('reg-numero').value.trim();
+  const bairro     = document.getElementById('reg-bairro').value.trim();
+  const cidade     = document.getElementById('reg-cidade').value.trim();
+  const estado     = document.getElementById('reg-estado').value.trim();
 
-  // Acadêmico
   const escolaridade = document.getElementById('reg-escolaridade').value;
   const instituicao  = document.getElementById('reg-instituicao').value.trim();
   const curso        = document.getElementById('reg-curso').value.trim();
@@ -300,7 +348,7 @@ function studentRegister() {
 
   // Endereço
   if (cep.replace(/\D/g,'').length !== 8)
-              return showError('reg-cep',       'CEP inválido.');
+              return showError('reg-cep',        'CEP inválido.');
   if (!logradouro) return showError('reg-logradouro', 'Logradouro obrigatório.');
   if (!numero)     return showError('reg-numero',     'Número obrigatório.');
   if (!bairro)     return showError('reg-bairro',     'Bairro obrigatório.');
@@ -322,15 +370,26 @@ function studentRegister() {
               return showError('reg-pwc',   'As senhas não coincidem.');
   if (!terms) return showError('reg-terms-field', 'Aceite os termos para continuar.');
 
-  showSuccess(
-    `Bem-vindo(a), ${name.split(' ')[0]}!`,
-    `Enviamos um e-mail de verificação para ${email}. Confirme para ativar sua conta.`,
-    'register'
-  );
+
+  const btn = document.querySelector('#screen-register .btn-primary');
+  btn.disabled = true;
+  btn.textContent = 'Criando conta...';
+  btn.setAttribute('aria-busy', 'true');
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Criar conta';
+    btn.removeAttribute('aria-busy');
+    showSuccess(
+      `Bem-vindo(a), ${name.split(' ')[0]}!`,
+      `Enviamos um e-mail de verificação para ${email}. Confirme para ativar sua conta.`,
+      'register'
+    );
+  }, 900);
 }
 
 
-// ── REDEFINIÇÃO DE SENHA 
+// REDEFINIÇÃO DE SENHA
 let resetOTP = '';
 
 function sendResetCode(isResend = false) {
@@ -348,13 +407,9 @@ function sendResetCode(isResend = false) {
   console.log('[DEV] OTP de redefinição:', resetOTP);
 
   document.getElementById('reset-email-target').textContent = email;
-
-  // Limpa campos da tela de reset
   document.querySelectorAll('.reset-digit').forEach(d => (d.value = ''));
   document.getElementById('reset-pw').value  = '';
   document.getElementById('reset-pwc').value = '';
-
-  // Reseta medidor de força
   document.querySelectorAll('#reset-pw-meter .pw-bar').forEach(b => (b.className = 'pw-bar'));
   document.getElementById('reset-pw-label').textContent = '';
 
@@ -373,7 +428,6 @@ function resetOtpNext(el, idx) {
 }
 
 function checkResetStrength(input) {
-  // Reutiliza a lógica visual mas aponta para os elementos do reset
   const pw = input.value;
   let score = 0;
   if (pw.length >= 8)          score++;
@@ -405,13 +459,10 @@ function confirmReset() {
 
   clearErrors();
 
-  // Valida código
   if (code.length < 6)
     return showResetOtpError('Insira o código completo de 6 dígitos.');
   if (code !== resetOTP && code !== '123456')
     return showResetOtpError('Código incorreto. Tente novamente.');
-
-  // Valida senhas
   if (pw.length < 8)
     return showError('reset-pw', 'Mínimo 8 caracteres.');
   if (pw !== pwc)
@@ -427,26 +478,30 @@ function confirmReset() {
 function showResetOtpError(msg) {
   const el = document.getElementById('reset-otp-error');
   el.textContent = msg;
-  el.style.cssText = 'font-size:11px; color:var(--error); margin-top:6px; display:block;';
+  el.setAttribute('role', 'alert');
+  el.style.cssText = 'font-size:11px;color:var(--error);margin-top:6px;display:block;';
   document.querySelectorAll('.reset-digit').forEach(d => (d.style.borderColor = 'var(--error)'));
 }
 
 
-// ── EVENT LISTENERS ESPECÍFICOS 
+// EVENT LISTENERS
 document.addEventListener('DOMContentLoaded', () => {
-  // Fechar modal OTP ao clicar fora
+
   document.getElementById('otp-overlay').addEventListener('click', function (e) {
     if (e.target === this) closeOTPModal();
   });
 
-  // Backspace navega entre dígitos OTP do modal
+
+  document.getElementById('otp-overlay').setAttribute('aria-hidden', 'true');
+
+
   document.querySelectorAll('#otp-overlay .otp-digit').forEach((el, idx, arr) => {
     el.addEventListener('keydown', e => {
       if (e.key === 'Backspace' && !el.value && idx > 0) arr[idx - 1].focus();
     });
   });
 
-  // Backspace navega entre dígitos OTP da redefinição
+
   document.querySelectorAll('.reset-digit').forEach((el, idx, arr) => {
     el.addEventListener('keydown', e => {
       if (e.key === 'Backspace' && !el.value && idx > 0) arr[idx - 1].focus();
@@ -458,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Fechar dropdowns de busca ao clicar fora
+
   document.addEventListener('click', e => {
     if (!e.target.closest('#inst-search-wrap'))
       document.getElementById('inst-dropdown').classList.remove('open');
@@ -466,12 +521,44 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('curso-dropdown').classList.remove('open');
   });
 
-  // Limpar erro em selects ao mudar valor
+
+  ['inst-dropdown', 'curso-dropdown'].forEach(ddId => {
+    const inputId = ddId === 'inst-dropdown' ? 'reg-instituicao' : 'reg-curso';
+    const input   = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener('keydown', e => {
+      const dd    = document.getElementById(ddId);
+      const items = dd.querySelectorAll('li:not(.no-result)');
+      if (!dd.classList.contains('open') || !items.length) return;
+      const active = dd.querySelector('li.active');
+      let idx = Array.from(items).indexOf(active);
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (active) active.classList.remove('active');
+        idx = (idx + 1) % items.length;
+        items[idx].classList.add('active');
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (active) active.classList.remove('active');
+        idx = (idx - 1 + items.length) % items.length;
+        items[idx].classList.add('active');
+      } else if (e.key === 'Enter' && active) {
+        e.preventDefault();
+        input.value = active.textContent;
+        dd.classList.remove('open');
+      } else if (e.key === 'Escape') {
+        dd.classList.remove('open');
+      }
+    });
+  });
+
+
   document.querySelectorAll('select').forEach(sel => {
     sel.addEventListener('change', () => {
       const err = sel.closest('.field')?.querySelector('.field-error');
       if (err) err.remove();
       sel.style.borderColor = '';
+      sel.removeAttribute('aria-invalid');
     });
   });
 });

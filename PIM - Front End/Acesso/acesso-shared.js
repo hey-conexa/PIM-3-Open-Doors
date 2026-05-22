@@ -1,9 +1,6 @@
-/* ══════════════════════════════════════════════
-   Open Doors — acesso-shared.js
-   Funções compartilhadas pelas páginas de acesso
-   ══════════════════════════════════════════════ */
+/* Funções compartilhadas pelas páginas de acesso */
 
-// ── TEMA ─────────────────────────────────────────
+// TEMA 
 function toggleTheme() {
   const html  = document.documentElement;
   const isDark = html.getAttribute('data-theme') === 'dark';
@@ -12,7 +9,6 @@ function toggleTheme() {
   try { localStorage.setItem('od-theme', next); } catch (e) {}
 }
 
-// Aplica tema salvo antes do primeiro render
 (function () {
   try {
     const saved = localStorage.getItem('od-theme');
@@ -20,7 +16,7 @@ function toggleTheme() {
   } catch (e) {}
 })();
 
-// ── VIEW ROUTER ───────────────────────────────────
+// VIEW ROUTER 
 function showScreen(id) {
   document.querySelectorAll('.screen, .success-screen').forEach(s => {
     s.classList.remove('active');
@@ -29,7 +25,7 @@ function showScreen(id) {
   if (el) el.classList.add('active');
 }
 
-// ── MÁSCARAS ──────────────────────────────────────
+// MÁSCARAS 
 function maskPhone(el) {
   let v = el.value.replace(/\D/g, '').slice(0, 11);
   if      (v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
@@ -52,7 +48,7 @@ function maskCPF(el) {
   el.value = v;
 }
 
-// ── ERROS INLINE ─────────────────────────────────
+// ERROS INLINE 
 function showError(fieldId, msg) {
   const field = document.getElementById(fieldId);
   if (!field) { alert(msg); return; }
@@ -63,20 +59,25 @@ function showError(fieldId, msg) {
   const err = document.createElement('span');
   err.className   = 'field-error';
   err.textContent = msg;
+  err.setAttribute('role', 'alert');
+  err.setAttribute('aria-live', 'polite');
   err.style.cssText = 'font-size:11px;color:var(--error);margin-top:4px;display:block;';
 
-  // Append after select-wrap or search-wrap if present, else after field itself
   const wrapper = field.closest('.select-wrap') || field.closest('.search-wrap') || field.closest('.cep-wrap');
   const container = wrapper ? wrapper.parentElement : field.parentElement;
   container.appendChild(err);
 
   field.style.borderColor = 'var(--error)';
+  field.setAttribute('aria-invalid', 'true');
   field.focus();
 }
 
 function clearErrors() {
   document.querySelectorAll('.field-error').forEach(e => e.remove());
-  document.querySelectorAll('input, select').forEach(i => (i.style.borderColor = ''));
+  document.querySelectorAll('input, select').forEach(i => {
+    i.style.borderColor = '';
+    i.removeAttribute('aria-invalid');
+  });
 }
 
 // Limpa erro ao digitar
@@ -86,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const err = input.parentElement.querySelector('.field-error');
       if (err) err.remove();
       input.style.borderColor = '';
+      input.removeAttribute('aria-invalid');
     });
   });
 });

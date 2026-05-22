@@ -1,4 +1,4 @@
-/*Toggle de tema claro/escuro da página principal*/
+/* tema claro/escuro da página principal*/
 
 (function () {
     try {

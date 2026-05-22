@@ -2,6 +2,36 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+.skip-link {
+  position: absolute;
+  top: -56px;
+  left: 16px;
+  background: var(--blue);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  z-index: 9999;
+  transition: top 0.2s ease;
+}
+.skip-link:focus { top: 0; outline: 2px solid #fff; outline-offset: 2px; }
+
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+
+input[aria-required="true"] + .field-error,
+input[aria-invalid="true"] {
+  border-color: var(--error) !important;
+}
+
 :root {
   --blue:        #087CA7;
   --blue-dark:   #055a7a;
@@ -19,7 +49,8 @@
 }
 
 
-/* TEMA CLARO (PADRÃO */
+/* TEMA CLARO (PADRÃO) */
+
 [data-theme="light"] {
   --bg:            #FAFDF6;
   --surface:       #f0f8fc;
@@ -41,6 +72,7 @@
 
 
 /* TEMA ESCURO */
+
 [data-theme="dark"] {
   --bg:            #0f1117;
   --surface:       #181b22;
@@ -124,7 +156,7 @@ body {
   align-items: center;
   text-decoration: none;
 }
-.logo-img { height: 44px; width: auto; }
+.logo-img { height: 115px; padding-top: 10px; width: auto; }
 [data-theme="dark"] .logo-img { filter: brightness(0) invert(1); opacity: 0.85; }
 
 .page-badge {
@@ -206,7 +238,7 @@ body {
 }
 
 
-/* Passos — estudante */
+/* PASSOS ESTUDANTE */
 .brand-steps {
   display: flex;
   flex-direction: column;
@@ -230,7 +262,7 @@ body {
 .step-text strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 2px; }
 
 
-/* Stats — empresa */
+/* ESTATÍSTICAS - EMPRESA */
 .brand-stats {
   margin-top: auto;
   padding-top: 32px;
@@ -255,7 +287,7 @@ body {
 .stat-label { font-size: 12px; color: var(--text-hint); line-height: 1.4; }
 
 
-/* MAIN */
+/* PRINCIPAL */
 .main {
   flex: 1;
   overflow-y: auto;
@@ -269,7 +301,7 @@ body {
 .form-container { width: 100%; max-width: 480px; }
 
 
-/* SCREENS */
+/* TELAS */
 .screen { display: none; }
 .screen.active { display: block; animation: fadeUp 0.25s ease; }
 
@@ -289,7 +321,7 @@ body {
 .screen-sub a:hover { text-decoration: underline; }
 
 
-/* SECTION LABEL — empresa */
+/* SECTION LABEL — EMPRESA */
 .section-label {
   font-size: 11px; font-weight: 600;
   letter-spacing: 0.8px; text-transform: uppercase;
@@ -301,7 +333,7 @@ body {
 .section-label:first-child { margin-top: 0; }
 
 
-/* SOCIAL — estudante */
+/* SOCIAL — ESTUDANTE */
 .social-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -322,13 +354,13 @@ body {
 .social-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
 
-/* DIVIDER */
+/* DIVISOR */
 .divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; }
 .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .divider span { font-size: 12px; color: var(--text-hint); white-space: nowrap; }
 
 
-/* FIELDS */
+/* CAMPOS */
 .fields    { display: flex; flex-direction: column; gap: 14px; }
 .field     { display: flex; flex-direction: column; gap: 5px; }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -373,7 +405,8 @@ input[readonly]    { opacity: 0.5; cursor: default; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cursor: pointer; }
 [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 
-/* ══ PASSWORD WRAP ══ */
+/* WRAP DA SENHA */
+
 .pw-wrap { position: relative; }
 .pw-wrap input { padding-right: 42px; }
 .pw-toggle {
@@ -386,7 +419,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cur
 .pw-toggle:hover { color: var(--blue); }
 .pw-toggle svg { width: 16px; height: 16px; }
 
-/* ══ PASSWORD STRENGTH ══ */
+/* FORÇA DA SENHA */
 .pw-meter { display: flex; gap: 4px; margin-top: 7px; }
 .pw-bar {
   flex: 1; height: 3px; border-radius: 3px;
@@ -398,7 +431,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cur
 .pw-label { font-size: 11px; color: var(--text-hint); margin-top: 4px; }
 
 
-/* LEGAL NOTE */
+/* NOTA LEGAL */
 .legal-note {
   font-size: 12px; color: var(--text-hint); line-height: 1.6;
   padding: 10px 13px;
@@ -411,7 +444,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cur
 .legal-note a:hover { text-decoration: underline; }
 
 
-/* INFO BOX — empresa */
+/* CAIXA DE INFORMAÇÃO - EMPRESA */
 .info-box {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -432,7 +465,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cur
 .check-field a { color: var(--blue); text-decoration: none; }
 
 
-/* BUTTONS */
+/* SEÇÃO BOTÕES */
 .btn-primary {
   width: 100%; padding: 11px 20px;
   background: var(--blue); color: #fff;
@@ -465,7 +498,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cur
 .mt-lg { margin-top: 24px; }
 
 
-/* OTP MODAL — estudante */
+/* OTP MODAL - ESTUDANTE */
 .overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.55); z-index: 200;
@@ -574,7 +607,7 @@ a.success-btn.btn-ghost {
 }
 a.success-btn.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
 
-/* ══ BACK BUTTON (dentro de screen) ══ */
+/* BOTÃO DE RETORNO */
 .screen-back {
   margin-bottom: 20px;
 }
@@ -595,7 +628,7 @@ a.success-btn.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
 .back-screen-btn:hover { color: var(--blue); }
 .back-screen-btn svg   { width: 14px; height: 14px; }
 
-/* ══ SCREEN ICON (forgot / reset) ══ */
+/* ICONE (ESQUECI + RESET) */
 .screen-icon {
   width: 52px; height: 52px;
   background: var(--accent-dim);
@@ -605,7 +638,6 @@ a.success-btn.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
 }
 .screen-icon svg { width: 24px; height: 24px; stroke: var(--blue); }
 
-/* ══ OTP INLINE (reset screen) ══ */
 .otp-row--inline {
   justify-content: flex-start;
   margin-bottom: 0;
@@ -645,7 +677,7 @@ a.success-btn.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
   pointer-events: none;
 }
 
-/* ══ SEARCH WRAP (instituição / curso) ══ */
+/* WRAP DE PESQUISA (INSTITUIÇÃO + CURSO) */
 .search-wrap {
   position: relative;
 }
@@ -697,7 +729,7 @@ a.success-btn.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
 }
 .search-dropdown li.no-result:hover { background: transparent; color: var(--text-hint); }
 
-/* ══ CEP WRAP ══ */
+/* CEP */
 .cep-wrap { position: relative; }
 .cep-spinner {
   position: absolute;
@@ -710,7 +742,7 @@ a.success-btn.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
 .cep-spinner svg { width: 100%; height: 100%; }
 @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
 
-/* ══ MONTH INPUT ══ */
+/* INPUT DA DATA */
 input[type="month"] {
   width: 100%;
   padding: 10px 13px;
@@ -733,7 +765,7 @@ input[type="month"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cu
 /* FIM DO CSS GERAL */
 
 
-/* ══ RESPONSIVIDADE ══ */
+/* SEÇÃO RESPONSIVIDADE */
 @media (max-width: 860px) {
   .page-layout { flex-direction: column; }
   .brand-panel { width: 100%; height: auto; position: static; padding: 28px 24px 20px; border-right: none; border-bottom: 1px solid var(--border); }
