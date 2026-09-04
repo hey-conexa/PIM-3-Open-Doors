@@ -88,5 +88,6 @@ namespace OpenDoors.Api.Services.IA
 
             var resultado = await _scoreService.GerarAsync(body.EstudanteId, body.VagaId);
             return resultado;
+        }
     }
 }
