@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OpenDoors.Api.DTOs;
-using OpenDoors.Api.Models;
+using OpenDoors.Api.Interfaces.TestesRespostas;
 
 namespace OpenDoors.Api.Controllers
 {
@@ -8,27 +7,19 @@ namespace OpenDoors.Api.Controllers
     [Route("api/testes-respostas")]
     public class TestesRespostasController : ControllerBase
     {
-        private readonly Supabase.Client _supabase;
+        private readonly ITesteRespostaService _service;
 
-        public TestesRespostasController(Supabase.Client supabase)
+        public TestesRespostasController(ITesteRespostaService service)
         {
-            _supabase = supabase;
+            _service = service;
         }
 
         // GET /api/testes-respostas
         [HttpGet]
         public async Task<IActionResult> ListarTodas()
         {
-            try
-            {
-                var resultado = await _supabase.From<TesteResposta>().Get();
-                var dto = resultado.Models.Select(MapearParaDto).ToList();
-                return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var resultado = await _service.ListarTodos();
+            return Ok(resultado);
         }
 
         // GET /api/testes-respostas/teste/{testeId}
@@ -36,32 +27,8 @@ namespace OpenDoors.Api.Controllers
         [HttpGet("teste/{testeId}")]
         public async Task<IActionResult> ListarPorTeste(int testeId)
         {
-            try
-            {
-                var resultado = await _supabase
-                    .From<TesteResposta>()
-                    .Where(r => r.TesteId == testeId)
-                    .Order(r => r.PerguntaId, Supabase.Postgrest.Constants.Ordering.Ascending)
-                    .Get();
-                var dto = resultado.Models.Select(MapearParaDto).ToList();
-                return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
-        }
-
-        private static TesteRespostaDto MapearParaDto(TesteResposta r)
-        {
-            return new TesteRespostaDto
-            {
-                Id = r.Id,
-                TesteId = r.TesteId,
-                PerguntaId = r.PerguntaId,
-                Pergunta = r.Pergunta,
-                Resposta = r.Resposta
-            };
+            var resultado = await _service.ListarPorTeste(testeId);
+            return Ok(resultado);
         }
     }
 }
