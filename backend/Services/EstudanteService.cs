@@ -78,9 +78,9 @@ namespace OpenDoors.Api.Services
             return MapearParaDto(novo);
         }
 
-        public async Task<EstudanteDto> Atualizar(CreateEstudanteDto estudanteAtualizado)
+        public async Task<EstudanteDto> Atualizar(CreateEstudanteDto estudanteAtualizado, Guid id)
         {
-            var existente = await ObterEstudanteModelPorId(estudanteAtualizado.Id);
+            var existente = await ObterEstudanteModelPorId(id);
 
             existente.Nome = estudanteAtualizado.Nome;
             existente.Email = estudanteAtualizado.Email;

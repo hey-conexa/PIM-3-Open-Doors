@@ -8,7 +8,7 @@ namespace OpenDoors.Api.Interfaces.Estudantes
         public Task<IReadOnlyList<EstudanteDto>> ListarAtivos();
         public Task<EstudanteDto> BuscarPorId(Guid id);
         public Task<EstudanteDto> Criar(CreateEstudanteDto novoEstudante);
-        public Task<EstudanteDto> Atualizar(CreateEstudanteDto estudanteAtualizado);
+        public Task<EstudanteDto> Atualizar(CreateEstudanteDto estudanteAtualizado, Guid id);
         public Task<EstudanteDto> Deletar(Guid id);
     }
 }
