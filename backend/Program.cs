@@ -1,4 +1,5 @@
 using OpenDoors.Api.Interfaces.Estudantes;
+using OpenDoors.Api.Middleware;
 using OpenDoors.Api.Repositories;
 using OpenDoors.Api.Services;
 
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // ============================================
 // CONFIGURAÇÕES DOS SERVIÇOS
 // ============================================
+
+
 
 // Adiciona suporte a Controllers (as classes que vão receber as requisições HTTP)
 builder.Services.AddControllers()
@@ -82,6 +85,8 @@ builder.Services.AddScoped<OpenDoors.Api.Services.GerarScoreService>();
 // ============================================
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 // Em ambiente de desenvolvimento, mostra o Swagger
 if (app.Environment.IsDevelopment())
