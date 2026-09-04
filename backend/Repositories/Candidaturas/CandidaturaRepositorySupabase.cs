@@ -1,6 +1,7 @@
-using OpenDoors.Api.Models;
-using OpenDoors.Api.Interfaces.Candidaturas;
 using OpenDoors.Api.Exceptions;
+using OpenDoors.Api.Interfaces.Candidaturas;
+using OpenDoors.Api.Models;
+using System.Text.RegularExpressions;
 
 namespace OpenDoors.Api.Repositories.Candidaturas
 {
@@ -54,6 +55,15 @@ namespace OpenDoors.Api.Repositories.Candidaturas
                 .Where(c => c.EmpresaId == empresaId)
                 .Get();
             return resultado.Models;
+        }
+
+        public async Task<List<Candidatura>> ListarPorIdEstudanteIdVaga(Guid estudanteId, int vagaId)
+        {
+            var candidaturas = await _supabase
+                .From<Candidatura>()
+                .Where(c => c.EstudanteId == estudanteId && c.VagaId == vagaId)
+                .Get();
+            return candidaturas.Models;
         }
 
         public async Task Criar(Candidatura novaCandidatura)

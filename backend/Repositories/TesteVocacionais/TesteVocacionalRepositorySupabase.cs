@@ -40,5 +40,10 @@ namespace OpenDoors.Api.Repositories.TesteVocacionais
                 .Get();
             return resultado.Models;
         }
+
+        public async Task Criar(TesteVocacional novoTesteVocacional)
+        {
+            await _supabase.From<TesteVocacional>().Insert(novoTesteVocacional);
+        }
     }
 }
