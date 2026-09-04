@@ -1,3 +1,7 @@
+using OpenDoors.Api.Interfaces.Estudantes;
+using OpenDoors.Api.Repositories;
+using OpenDoors.Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ============================================
@@ -65,6 +69,9 @@ builder.Services.AddScoped<OpenDoors.Api.Services.GroqService>(sp =>
     var config = sp.GetRequiredService<IConfiguration>();
     return new OpenDoors.Api.Services.GroqService(config, http);
 });
+
+builder.Services.AddScoped<IEstudanteRepository, EstudanteRepositorySupabase>();
+builder.Services.AddScoped<IEstudanteService, EstudanteService>();
 
 builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarCurriculoService>();
 builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarTesteService>();
