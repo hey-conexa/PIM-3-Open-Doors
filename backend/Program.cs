@@ -2,6 +2,7 @@ using OpenDoors.Api.Interfaces.Candidaturas;
 using OpenDoors.Api.Interfaces.CandidaturasHistorico;
 using OpenDoors.Api.Interfaces.Empresas;
 using OpenDoors.Api.Interfaces.Estudantes;
+using OpenDoors.Api.Interfaces.IA;
 using OpenDoors.Api.Interfaces.Matches;
 using OpenDoors.Api.Interfaces.Notificacoes;
 using OpenDoors.Api.Interfaces.TestesRespostas;
@@ -17,11 +18,11 @@ using OpenDoors.Api.Repositories.Notificacoes;
 using OpenDoors.Api.Repositories.TesteRespostas;
 using OpenDoors.Api.Repositories.TesteVocacionais;
 using OpenDoors.Api.Repositories.Vagas;
-using OpenDoors.Api.Services;
 using OpenDoors.Api.Services.CandidaturaHistoricos;
 using OpenDoors.Api.Services.Candidaturas;
 using OpenDoors.Api.Services.Empresas;
 using OpenDoors.Api.Services.Estudantes;
+using OpenDoors.Api.Services.IA;
 using OpenDoors.Api.Services.Matchs;
 using OpenDoors.Api.Services.Notificacoes;
 using OpenDoors.Api.Services.TesteRespostas;
@@ -89,21 +90,26 @@ builder.Services.AddSingleton<Supabase.Client>(_ =>
 // CONFIGURAÇÃO DA IA (Groq + Services)
 // ============================================
 
-builder.Services.AddHttpClient<OpenDoors.Api.Services.GroqService>();
+builder.Services.AddHttpClient<GroqService>()
+    .ConfigureHttpClient((sp, client) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+        var apiKey = config["Groq:ApiKey"];
+        if (!string.IsNullOrEmpty(apiKey))
+        {
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+        }
+    });
 
-builder.Services.AddScoped<OpenDoors.Api.Services.GroqService>(sp =>
-{
-    var http = sp.GetRequiredService<IHttpClientFactory>().CreateClient();
-    var config = sp.GetRequiredService<IConfiguration>();
-    return new OpenDoors.Api.Services.GroqService(config, http);
-});
+builder.Services.AddScoped<IChatIAService>(sp => sp.GetRequiredService<GroqService>());
 
 builder.Services.AddScoped<IEstudanteRepository, EstudanteRepositorySupabase>();
 builder.Services.AddScoped<IEstudanteService, EstudanteService>();
 
-builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarCurriculoService>();
-builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarTesteService>();
-builder.Services.AddScoped<OpenDoors.Api.Services.GerarScoreService>();
+builder.Services.AddScoped<IAnalisarCurriculoService, AnalisarCurriculoService>();
+builder.Services.AddScoped<IAnalisarTesteService, AnalisarTesteService>();
+builder.Services.AddScoped<IGerarScoreService, GerarScoreService>();
 
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepositorySupabase>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();

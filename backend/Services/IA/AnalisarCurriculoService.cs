@@ -1,22 +1,25 @@
 using System.Text;
 using OpenDoors.Api.DTOs;
+using OpenDoors.Api.Exceptions;
+using OpenDoors.Api.Interfaces.Estudantes;
+using OpenDoors.Api.Interfaces.IA;
 using OpenDoors.Api.Models;
 using UglyToad.PdfPig;
 
-namespace OpenDoors.Api.Services
+namespace OpenDoors.Api.Services.IA
 {
     /// <summary>
     /// Analisa currículo (PDF) usando IA, extrai habilidades e salva no Supabase.
     /// </summary>
-    public class AnalisarCurriculoService
+    public class AnalisarCurriculoService : IAnalisarCurriculoService
     {
-        private readonly GroqService _groq;
-        private readonly Supabase.Client _supabase;
+        private readonly IChatIAService _groq;
+        private readonly IEstudanteRepository _estudanteRepository;
 
-        public AnalisarCurriculoService(GroqService groq, Supabase.Client supabase)
+        public AnalisarCurriculoService(IChatIAService groq, IEstudanteRepository estudanteRepository)
         {
             _groq = groq;
-            _supabase = supabase;
+            _estudanteRepository = estudanteRepository;
         }
 
         /// <summary>
@@ -68,19 +71,15 @@ namespace OpenDoors.Api.Services
                 """;
 
             var dados = await _groq.ChatJsonAsync<CurriculoAnalisadoDto>(system, user);
-
-            // Atualiza o estudante no banco (usando SUA Model existente)
-            var estudante = await _supabase
-                .From<Estudante>()
-                .Where(e => e.Id == estudanteId)
-                .Single();
+            var estudante = await _estudanteRepository.BuscarPorId(estudanteId);
 
             if (estudante == null)
-                throw new KeyNotFoundException($"Estudante não encontrado: {estudanteId}");
+                throw new NotFoundException("Não foi possível encontrar o estudante.");
 
             estudante.HabilidadesExtraidas = dados.Habilidades;
             estudante.TemCurriculo = true;
-            await estudante.Update<Estudante>();
+
+            await _estudanteRepository.Atualizar(estudante);
 
             return dados;
         }

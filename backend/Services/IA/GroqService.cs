@@ -1,14 +1,16 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using OpenDoors.Api.Exceptions;
+using OpenDoors.Api.Interfaces.IA;
 
-namespace OpenDoors.Api.Services
+namespace OpenDoors.Api.Services.IA
 {
     /// <summary>
     /// Encapsula chamadas à API Groq (LLM Llama 3.3).
     /// Será migrado para Claude API no período de aperfeiçoamento (24/05 - 03/06).
     /// </summary>
-    public class GroqService
+    public class GroqService : IChatIAService
     {
         private readonly HttpClient _http;
         private const string Endpoint = "https://api.groq.com/openai/v1/chat/completions";
@@ -64,11 +66,11 @@ namespace OpenDoors.Api.Services
             try
             {
                 return JsonConvert.DeserializeObject<T>(raw)
-                    ?? throw new InvalidOperationException("Resposta nula após deserialização.");
+                    ?? throw new UnprocessableEntityException("Resposta nula após deserialização.");
             }
             catch (JsonException ex)
             {
-                throw new InvalidOperationException(
+                throw new UnprocessableEntityException(
                     $"IA retornou JSON inválido: {ex.Message}\nConteúdo: {raw}");
             }
         }

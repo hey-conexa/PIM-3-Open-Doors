@@ -23,6 +23,8 @@ namespace OpenDoors.Api.Services.TesteVocacionais
         public async Task<TesteVocacionalDto> BuscarPorEstudante(Guid estudanteId)
         {
             var teste = await _repository.BuscarPorEstudante(estudanteId);
+            if (teste == null)
+                throw new NotFoundException("Estudante não encontrado.");
             return MapearParaDto(teste);
         }
 

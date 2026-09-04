@@ -1,16 +1,17 @@
 using OpenDoors.Api.DTOs;
+using OpenDoors.Api.Interfaces.IA;
 
-namespace OpenDoors.Api.Services
+namespace OpenDoors.Api.Services.IA
 {
     /// <summary>
     /// Analisa respostas do teste vocacional via IA.
     /// A persistência fica no Controller (separação de responsabilidades).
     /// </summary>
-    public class AnalisarTesteService
+    public class AnalisarTesteService : IAnalisarTesteService
     {
-        private readonly GroqService _groq;
+        private readonly IChatIAService _groq;
 
-        public AnalisarTesteService(GroqService groq) => _groq = groq;
+        public AnalisarTesteService(IChatIAService groq) => _groq = groq;
 
         public async Task<PerfilVocacionalDto> AnalisarAsync(List<RespostaVocacionalDto> respostas)
         {

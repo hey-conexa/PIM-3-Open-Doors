@@ -1,48 +1,60 @@
 using OpenDoors.Api.DTOs;
+using OpenDoors.Api.Exceptions;
+using OpenDoors.Api.Interfaces.Candidaturas;
+using OpenDoors.Api.Interfaces.Estudantes;
+using OpenDoors.Api.Interfaces.IA;
+using OpenDoors.Api.Interfaces.Matches;
+using OpenDoors.Api.Interfaces.TestesVocacionais;
+using OpenDoors.Api.Interfaces.Vagas;
 using OpenDoors.Api.Models;
 
 
-namespace OpenDoors.Api.Services
+namespace OpenDoors.Api.Services.IA
 {
     /// <summary>
     /// Calcula score de compatibilidade Estudante x Vaga via IA,
     /// salva o match e atualiza ranking automaticamente.
     /// </summary>
-    public class GerarScoreService
+    public class GerarScoreService : IGerarScoreService
     {
-        private readonly GroqService _groq;
-        private readonly Supabase.Client _supabase;
+        private readonly IChatIAService _groq;
+        private readonly IEstudanteRepository _estudanteRepository;
+        private readonly IVagaRepository _vagaRepository;
+        private readonly ITesteVocacionalRepository _testeVocacionalRepository;
+        private readonly IMatchRepository _matchRepository;
+        private readonly ICandidaturaRepository _candidaturaRepository;
 
-        public GerarScoreService(GroqService groq, Supabase.Client supabase)
+        public GerarScoreService(
+            IChatIAService groq, 
+            IEstudanteRepository estudanteRepository, 
+            IVagaRepository vagaRepository,
+            ITesteVocacionalRepository testeVocacionalRepository,
+            IMatchRepository matchRepository,
+            ICandidaturaRepository candidaturaRepository
+            )
         {
             _groq = groq;
-            _supabase = supabase;
+            _estudanteRepository = estudanteRepository;
+            _vagaRepository = vagaRepository;
+            _matchRepository = matchRepository;
+            _testeVocacionalRepository = testeVocacionalRepository;
+            _candidaturaRepository = candidaturaRepository;
         }
 
         public async Task<ScoreCompatibilidadeDto> GerarAsync(Guid estudanteId, int vagaId)
         {
             // Busca dados no Supabase
-            var estudante = await _supabase
-                .From<Estudante>()
-                .Where(e => e.Id == estudanteId)
-                .Single();
+            var estudante = await _estudanteRepository.BuscarPorId(estudanteId);
 
             if (estudante == null)
-                throw new KeyNotFoundException($"Estudante não encontrado: {estudanteId}");
+                throw new NotFoundException($"Estudante não encontrado: {estudanteId}");
 
-            var vaga = await _supabase
-                .From<Vaga>()
-                .Where(v => v.Id == vagaId)
-                .Single();
+            var vaga = await _vagaRepository.BuscarPorId(vagaId);
 
             if (vaga == null)
-                throw new KeyNotFoundException($"Vaga não encontrada: {vagaId}");
+                throw new NotFoundException($"Vaga não encontrada: {vagaId}");
 
-            var testesResultado = await _supabase
-                .From<TesteVocacional>()
-                .Where(t => t.EstudanteId == estudanteId)
-                .Get();
-            var teste = testesResultado.Models.FirstOrDefault();
+            var teste = await _testeVocacionalRepository.BuscarPorEstudante(estudanteId);
 
             // Monta contextos
             var habilidades = estudante.HabilidadesExtraidas ?? new List<string>();
@@ -108,12 +120,9 @@ namespace OpenDoors.Api.Services
             var dados = await _groq.ChatJsonAsync<ScoreCompatibilidadeDto>(system, user);
 
             // Salva ou atualiza o match (usando SUAS Models)
-            var matchesExistentes = await _supabase
-                .From<Match>()
-                .Where(m => m.EstudanteId == estudanteId && m.VagaId == vagaId)
-                .Get();
 
-            var matchExistente = matchesExistentes.Models.FirstOrDefault();
+            var matchesExistentes = await _matchRepository.TopMatchesEstudante(estudanteId);
+            var matchExistente = matchesExistentes.FirstOrDefault();
 
             if (matchExistente != null)
             {
@@ -128,7 +137,7 @@ namespace OpenDoors.Api.Services
             }
             else
             {
-                await _supabase.From<Match>().Insert(new Match
+                await _matchRepository.Criar(new Match
                 {
                     EstudanteId = estudanteId,
                     VagaId = vagaId,
@@ -149,24 +158,17 @@ namespace OpenDoors.Api.Services
 
         private async Task AtualizarRankingAsync(int vagaId)
         {
-            var matches = await _supabase
-                .From<Match>()
-                .Where(m => m.VagaId == vagaId)
-                .Order(m => m.ScoreTotal, Supabase.Postgrest.Constants.Ordering.Descending)
-                .Get();
+            var matches = await _matchRepository.ListarPorVaga(vagaId);
 
             int posicao = 1;
-            foreach (var match in matches.Models)
+            foreach (var match in matches)
             {
-                var candidaturas = await _supabase
-                    .From<Candidatura>()
-                    .Where(c => c.EstudanteId == match.EstudanteId && c.VagaId == vagaId)
-                    .Get();
+                var candidaturas = await _candidaturaRepository.ListarPorIdEstudanteIdVaga(match.EstudanteId, vagaId);
 
-                foreach (var candidatura in candidaturas.Models)
+                foreach (var candidatura in candidaturas)
                 {
                     candidatura.PosicaoRanking = posicao;
-                    await candidatura.Update<Candidatura>();
+                    await _candidaturaRepository.AtualizarStatus(candidatura);
                 }
                 posicao++;
             }
