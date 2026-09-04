@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OpenDoors.Api.DTOs;
-using OpenDoors.Api.Models;
+using OpenDoors.Api.Interfaces.TestesVocacionais;
 
 namespace OpenDoors.Api.Controllers
 {
@@ -8,50 +7,28 @@ namespace OpenDoors.Api.Controllers
     [Route("api/testes-vocacionais")]
     public class TestesVocacionaisController : ControllerBase
     {
-        private readonly Supabase.Client _supabase;
+        private readonly ITesteVocacionalService _service;
 
-        public TestesVocacionaisController(Supabase.Client supabase)
+        public TestesVocacionaisController(ITesteVocacionalService service)
         {
-            _supabase = supabase;
+            _service = service;
         }
 
         // GET /api/testes-vocacionais
         [HttpGet]
         public async Task<IActionResult> ListarTodos()
         {
-            try
-            {
-                var resultado = await _supabase.From<TesteVocacional>().Get();
-                var dto = resultado.Models.Select(MapearParaDto).ToList();
-                return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var resultado = await _service.ListarTodos();
+            return Ok(resultado);
         }
 
-        // GET /api/testes-vocacionais/estudante/{id}
+        // GET /api/testes-vocacionais/estudante/{estudanteId}
         // Busca o teste de um estudante (só tem 1 por estudante)
         [HttpGet("estudante/{estudanteId}")]
         public async Task<IActionResult> BuscarPorEstudante(Guid estudanteId)
         {
-            try
-            {
-                var resultado = await _supabase
-                    .From<TesteVocacional>()
-                    .Where(t => t.EstudanteId == estudanteId)
-                    .Single();
-
-                if (resultado == null)
-                    return NotFound(new { mensagem = "Estudante ainda não fez o teste vocacional" });
-
-                return Ok(MapearParaDto(resultado));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var resultado = await _service.BuscarPorEstudante(estudanteId);
+            return Ok(resultado);
         }
 
         // GET /api/testes-vocacionais/analisados
@@ -59,34 +36,8 @@ namespace OpenDoors.Api.Controllers
         [HttpGet("analisados")]
         public async Task<IActionResult> ListarAnalisados()
         {
-            try
-            {
-                var resultado = await _supabase
-                    .From<TesteVocacional>()
-                    .Where(t => t.AnalisadoIa == true)
-                    .Get();
-                var dto = resultado.Models.Select(MapearParaDto).ToList();
-                return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
-        }
-
-        private static TesteVocacionalDto MapearParaDto(TesteVocacional t)
-        {
-            return new TesteVocacionalDto
-            {
-                Id = t.Id,
-                EstudanteId = t.EstudanteId,
-                PerfilDominante = t.PerfilDominante,
-                AreasSugeridas = t.AreasSugeridas,
-                PontosFortes = t.PontosFortes,
-                DescricaoPerfil = t.DescricaoPerfil,
-                AnalisadoIa = t.AnalisadoIa,
-                ConcluidoEm = t.ConcluidoEm
-            };
+            var resultado = await _service.ListarAnalisados();
+            return Ok(resultado);
         }
     }
 }
