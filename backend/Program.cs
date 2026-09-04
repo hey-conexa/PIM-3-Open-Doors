@@ -1,3 +1,4 @@
+using OpenDoors.Api.Interfaces.Empresas;
 using OpenDoors.Api.Interfaces.Estudantes;
 using OpenDoors.Api.Middleware;
 using OpenDoors.Api.Repositories;
@@ -79,6 +80,9 @@ builder.Services.AddScoped<IEstudanteService, EstudanteService>();
 builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarCurriculoService>();
 builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarTesteService>();
 builder.Services.AddScoped<OpenDoors.Api.Services.GerarScoreService>();
+
+builder.Services.AddScoped<IEmpresaRepository, EmpresaRepositorySupabase>();
+builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 
 // ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
