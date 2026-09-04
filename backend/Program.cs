@@ -1,9 +1,32 @@
 using OpenDoors.Api.Interfaces.Candidaturas;
+using OpenDoors.Api.Interfaces.CandidaturasHistorico;
 using OpenDoors.Api.Interfaces.Empresas;
 using OpenDoors.Api.Interfaces.Estudantes;
+using OpenDoors.Api.Interfaces.Matches;
+using OpenDoors.Api.Interfaces.Notificacoes;
+using OpenDoors.Api.Interfaces.TestesRespostas;
+using OpenDoors.Api.Interfaces.TestesVocacionais;
+using OpenDoors.Api.Interfaces.Vagas;
 using OpenDoors.Api.Middleware;
-using OpenDoors.Api.Repositories;
+using OpenDoors.Api.Repositories.CandidaturaHistoricos;
+using OpenDoors.Api.Repositories.Candidaturas;
+using OpenDoors.Api.Repositories.Empresas;
+using OpenDoors.Api.Repositories.Estudantes;
+using OpenDoors.Api.Repositories.Matchs;
+using OpenDoors.Api.Repositories.Notificacoes;
+using OpenDoors.Api.Repositories.TesteRespostas;
+using OpenDoors.Api.Repositories.TesteVocacionais;
+using OpenDoors.Api.Repositories.Vagas;
 using OpenDoors.Api.Services;
+using OpenDoors.Api.Services.CandidaturaHistoricos;
+using OpenDoors.Api.Services.Candidaturas;
+using OpenDoors.Api.Services.Empresas;
+using OpenDoors.Api.Services.Estudantes;
+using OpenDoors.Api.Services.Matchs;
+using OpenDoors.Api.Services.Notificacoes;
+using OpenDoors.Api.Services.TesteRespostas;
+using OpenDoors.Api.Services.TesteVocacionais;
+using OpenDoors.Api.Services.Vagas;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +110,30 @@ builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 
 builder.Services.AddScoped<ICandidaturaRepository, CandidaturaRepositorySupabase>();
 builder.Services.AddScoped<ICandidaturaService, CandidaturaService>();
+
+// CandidaturaHistorico
+builder.Services.AddScoped<ICandidaturaHistoricoRepository, CandidaturaHistoricoRepositorySupabase>();
+builder.Services.AddScoped<ICandidaturaHistoricoService, CandidaturaHistoricoService>();
+
+// Match
+builder.Services.AddScoped<IMatchRepository, MatchRepositorySupabase>();
+builder.Services.AddScoped<IMatchService, MatchService>();
+
+// Notificacao
+builder.Services.AddScoped<INotificacaoRepository, NotificacaoRepositorySupabase>();
+builder.Services.AddScoped<INotificacaoService, NotificacaoService>();
+
+// TesteResposta
+builder.Services.AddScoped<ITesteRespostaRepository, TesteRespostaRepositorySupabase>();
+builder.Services.AddScoped<ITesteRespostaService, TesteRespostaService>();
+
+// TesteVocacional
+builder.Services.AddScoped<ITesteVocacionalRepository, TesteVocacionalRepositorySupabase>();
+builder.Services.AddScoped<ITesteVocacionalService, TesteVocacionalService>();
+
+// Vaga
+builder.Services.AddScoped<IVagaRepository, VagaRepositorySupabase>();
+builder.Services.AddScoped<IVagaService, VagaService>();
 
 // ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
