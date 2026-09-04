@@ -34,7 +34,8 @@ namespace OpenDoors.Api.Middleware
             {
                 NotFoundException => (StatusCodes.Status404NotFound, exception.Message),
                 BadRequestException => (StatusCodes.Status400BadRequest, exception.Message),
-                ServerErrorException =>(StatusCodes.Status500InternalServerError, exception.Message),
+                ServerErrorException => (StatusCodes.Status500InternalServerError, exception.Message),
+                UnprocessableEntityException  => (StatusCodes.Status422UnprocessableEntity, exception.Message),
                 _ => (StatusCodes.Status500InternalServerError, "Ocorreu um erro interno no servidor")
             };
 
