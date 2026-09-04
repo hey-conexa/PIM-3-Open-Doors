@@ -22,90 +22,48 @@ namespace OpenDoors.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> ListarTodos()
         {
-            try
-            {
-                var resultado = await _service.ListarTodos();
-                return Ok(resultado);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var resultado = await _service.ListarTodos();
+            return Ok(resultado);
         }
 
         // GET /api/estudantes/ativos
         [HttpGet("ativos")]
         public async Task<IActionResult> ListarAtivos()
         {
-            try
-            {
-                var resultado = await _service.ListarAtivos();
-                return Ok(resultado);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var resultado = await _service.ListarAtivos();
+            return Ok(resultado);
         }
 
         // GET /api/estudantes/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> BuscarPorId(Guid id)
         {
-            try
-            {
-                var resultado = await _service.BuscarPorId(id);
-                return Ok(resultado);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var resultado = await _service.BuscarPorId(id);
+            return Ok(resultado);
         }
 
         // POST /api/estudantes
         [HttpPost]
         public async Task<IActionResult> Criar([FromBody] CreateEstudanteDto dto)
         {
-            try
-            {
-                var criado = await _service.Criar(dto);
-                return CreatedAtAction(nameof(BuscarPorId), new { id = criado.Id }, criado);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var criado = await _service.Criar(dto);
+            return CreatedAtAction(nameof(BuscarPorId), new { id = criado.Id }, criado);
         }
 
         // PUT /api/estudantes/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Atualizar(Guid id, [FromBody] CreateEstudanteDto dto)
         {
-            try
-            {
-                var resultado = await _service.Atualizar(dto, id);
-                return Ok(resultado);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var resultado = await _service.Atualizar(dto, id);
+            return Ok(resultado);
         }
 
         // DELETE /api/estudantes/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Deletar(Guid id)
         {
-            try
-            {
-                var usuarioDeletado = await _service.Deletar(id);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var usuarioDeletado = await _service.Deletar(id);
+            return NoContent();
         }
     }
 }
