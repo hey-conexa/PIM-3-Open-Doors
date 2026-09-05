@@ -1,6 +1,8 @@
 # Arquivos sensíveis
 appsettings.Development.json
 appsettings.Production.json
+appsettings.json
+
 minhas_keys.txt
 *.env
 
