@@ -4,26 +4,48 @@
     margin: 0; padding: 0; box-sizing: border-box;
 }
 
+*, *::before, *::after {
+    font-family: "Plus Jakarta Sans", "Plus Jakarta Sans", "DM Sans", sans-serif !important;
+    font-weight: 400 !important;
+}
+
+p, span, li, a, input, textarea, select {
+    font-weight: 500 !important;
+}
+
+h1, h2, h3, h4, h5, h6, strong, b {
+    font-weight: 700 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 :root {
-    --blue:        #087CA7;
-    --blue-dark:   #055a7a;
-    --blue-light:  #ecfffd;
+    --blue:        #0a82a8;
+    --blue-dark:   #066a8a;
+    --blue-light:  #e7f1ef;
     --accent:      #0065FF;
     --gold:        #f5a623;
-    --white:       #FAFDF6;
-    --gray-100:    #f4f6f8;
-    --gray-200:    #e2e8ed;
+    --white:       #c6dde8;
+    --gray-100:    #f1f4f3;
+    --gray-200:    #c9d3d0;
     --gray-400:    #9aa8b4;
     --gray-700:    #3a4a56;
-    --text:        #1c2b35;
+    --text:        #16313d;
     --radius-sm:   8px;
     --radius-md:   16px;
     --radius-lg:   28px;
-    --shadow-sm:   0 2px 8px rgba(8,124,167,.10);
-    --shadow-md:   0 8px 32px rgba(8,124,167,.14);
-    --shadow-lg:   0 20px 60px rgba(8,124,167,.18);
+    --shadow-sm:   0 2px 10px rgba(9, 45, 58, .10);
+    --shadow-md:   0 10px 28px rgba(9, 45, 58, .16);
+    --shadow-lg:   0 20px 56px rgba(9, 45, 58, .22);
     --nav-h:       64px;
-    --transition:  0.3s cubic-bezier(.4,0,.2,1);
+    --transition:  0.18s ease;
 }
 
 html { scroll-behavior: smooth; }
@@ -64,12 +86,20 @@ button:focus-visible,
 }
 
 body {
-    font-family: "DM Sans", sans-serif;
+    font-family: "Plus Jakarta Sans", "Plus Jakarta Sans", "DM Sans", sans-serif;
     font-weight: 400;
     color: var(--text);
     background: var(--white);
     overflow-x: hidden;
     padding-top: var(--nav-h);
+}
+
+section,
+.mural,
+.footer-strip,
+.modal-panel {
+    border: 1px solid rgba(10, 130, 168, 0.16);
+    box-shadow: var(--shadow-sm);
 }
 
 
@@ -121,7 +151,7 @@ body {
 }
 
 .menu-links li a {
-    font-family: "DM Sans", sans-serif;
+    font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
     font-size: 0.95rem;
     font-weight: 500;
     color: var(--gray-700);
@@ -238,8 +268,8 @@ body {
 }
 
 .botoes-topo button:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
 }
 
 
@@ -360,7 +390,7 @@ body {
     color: var(--gray-400);
 }
 .mural-slide--empty span   { font-size: 2.2rem; opacity: 0.5; }
-.mural-slide--empty strong { font-size: 0.95rem; font-family: "DM Sans", sans-serif; }
+.mural-slide--empty strong { font-size: 0.95rem; font-family: "Plus Jakarta Sans", "DM Sans", sans-serif; }
 .mural-slide--empty small  { font-size: 0.78rem; opacity: 0.7; }
 
 
@@ -442,7 +472,7 @@ body {
     display: flex; align-items: center; justify-content: center;
     font-size: 0.72rem; font-weight: 600;
     color: var(--gray-400);
-    font-family: "DM Sans", sans-serif;
+    font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
     transition: var(--transition);
 }
 .mural-thumb:hover        { transform: scale(1.04); border-color: var(--blue); }
@@ -453,7 +483,7 @@ body {
 
 .apoiadores {
     padding: clamp(40px, 6vw, 72px) 0;
-    background: var(--gray-100);
+    background: var(--white);
 }
 
 .apoiadores-inner {
@@ -521,7 +551,7 @@ body {
     padding: 5px 13px 5px 9px;
     cursor: pointer;
     color: var(--gray-700);
-    font-family: "DM Sans", sans-serif;
+    font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
     font-size: 0.82rem;
     font-weight: 500;
     transition: var(--transition);
@@ -667,7 +697,7 @@ body {
     border-radius: var(--radius-sm);
     background: none;
     color: #c0392b;
-    font-family: "DM Sans", sans-serif;
+    font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;

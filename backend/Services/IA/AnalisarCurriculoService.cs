@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using OpenDoors.Api.DTOs;
 using OpenDoors.Api.Exceptions;
 using OpenDoors.Api.Interfaces.Estudantes;
@@ -13,6 +14,7 @@ namespace OpenDoors.Api.Services.IA
     /// </summary>
     public class AnalisarCurriculoService : IAnalisarCurriculoService
     {
+<<<<<<< HEAD:backend/Services/IA/AnalisarCurriculoService.cs
         private readonly IChatIAService _groq;
         private readonly IEstudanteRepository _estudanteRepository;
 
@@ -20,6 +22,17 @@ namespace OpenDoors.Api.Services.IA
         {
             _groq = groq;
             _estudanteRepository = estudanteRepository;
+=======
+        private readonly GroqService _groq;
+        private readonly Supabase.Client _supabase;
+        private readonly string _supabaseUrl;
+
+        public AnalisarCurriculoService(GroqService groq, Supabase.Client supabase, IConfiguration config)
+        {
+            _groq = groq;
+            _supabase = supabase;
+            _supabaseUrl = config["Supabase:Url"]?.TrimEnd('/') ?? "";
+>>>>>>> main:backend/Services/AnalisarCurriculoService.cs
         }
 
         /// <summary>
@@ -38,9 +51,33 @@ namespace OpenDoors.Api.Services.IA
             return sb.ToString().Trim();
         }
 
-        public async Task<CurriculoAnalisadoDto> AnalisarAsync(Guid estudanteId, Stream pdfStream)
+        public async Task<CurriculoAnalisadoDto> AnalisarAsync(Guid estudanteId, Stream pdfStream, string fileName = "curriculo.pdf")
         {
-            var textoCurriculo = ExtrairTextoPdf(pdfStream);
+            // Lê o stream completo em memória (precisamos usar duas vezes: upload + extração)
+            using var ms = new MemoryStream();
+            await pdfStream.CopyToAsync(ms);
+            ms.Position = 0;
+
+            // 1. Faz upload para o Supabase Storage (bucket "curriculos")
+            string? curriculoUrl = null;
+            try
+            {
+                var storagePath = $"{estudanteId}/{DateTime.UtcNow:yyyyMMddHHmmss}_{fileName}";
+                var bytes = ms.ToArray();
+                await _supabase.Storage
+                    .From("curriculos")
+                    .Upload(bytes, storagePath, new Supabase.Storage.FileOptions { ContentType = "application/pdf", Upsert = true });
+
+                curriculoUrl = $"{_supabaseUrl}/storage/v1/object/public/curriculos/{storagePath}";
+            }
+            catch
+            {
+                // Upload falhou — continua sem URL (não bloqueia a análise)
+            }
+
+            // 2. Extrai texto e analisa com IA
+            ms.Position = 0;
+            var textoCurriculo = ExtrairTextoPdf(ms);
 
             if (string.IsNullOrWhiteSpace(textoCurriculo))
                 throw new InvalidOperationException("O PDF enviado não contém texto legível.");
@@ -71,15 +108,34 @@ namespace OpenDoors.Api.Services.IA
                 """;
 
             var dados = await _groq.ChatJsonAsync<CurriculoAnalisadoDto>(system, user);
+<<<<<<< HEAD:backend/Services/IA/AnalisarCurriculoService.cs
             var estudante = await _estudanteRepository.BuscarPorId(estudanteId);
+=======
+
+            // 3. Atualiza o estudante no banco com habilidades + URL do currículo
+            var estudante = await _supabase
+                .From<Estudante>()
+                .Where(e => e.Id == estudanteId)
+                .Single();
+>>>>>>> main:backend/Services/AnalisarCurriculoService.cs
 
             if (estudante == null)
                 throw new NotFoundException("Não foi possível encontrar o estudante.");
 
             estudante.HabilidadesExtraidas = dados.Habilidades;
             estudante.TemCurriculo = true;
+<<<<<<< HEAD:backend/Services/IA/AnalisarCurriculoService.cs
 
             await _estudanteRepository.Atualizar(estudante);
+=======
+            if (curriculoUrl != null)
+                estudante.CurriculoUrl = curriculoUrl;
+
+            await estudante.Update<Estudante>();
+>>>>>>> main:backend/Services/AnalisarCurriculoService.cs
+
+            // Devolve a URL para o frontend também
+            dados.CurriculoUrl = curriculoUrl;
 
             return dados;
         }

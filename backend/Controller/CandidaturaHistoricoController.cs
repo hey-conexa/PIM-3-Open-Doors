@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.Interfaces.CandidaturasHistorico;
 
 namespace OpenDoors.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/candidaturas-historico")]
     public class CandidaturasHistoricoController : ControllerBase

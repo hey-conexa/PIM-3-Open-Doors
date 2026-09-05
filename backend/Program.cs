@@ -1,41 +1,12 @@
-using OpenDoors.Api.Interfaces.Candidaturas;
-using OpenDoors.Api.Interfaces.CandidaturasHistorico;
-using OpenDoors.Api.Interfaces.Empresas;
-using OpenDoors.Api.Interfaces.Estudantes;
-using OpenDoors.Api.Interfaces.IA;
-using OpenDoors.Api.Interfaces.Matches;
-using OpenDoors.Api.Interfaces.Notificacoes;
-using OpenDoors.Api.Interfaces.TestesRespostas;
-using OpenDoors.Api.Interfaces.TestesVocacionais;
-using OpenDoors.Api.Interfaces.Vagas;
-using OpenDoors.Api.Middleware;
-using OpenDoors.Api.Repositories.CandidaturaHistoricos;
-using OpenDoors.Api.Repositories.Candidaturas;
-using OpenDoors.Api.Repositories.Empresas;
-using OpenDoors.Api.Repositories.Estudantes;
-using OpenDoors.Api.Repositories.Matchs;
-using OpenDoors.Api.Repositories.Notificacoes;
-using OpenDoors.Api.Repositories.TesteRespostas;
-using OpenDoors.Api.Repositories.TesteVocacionais;
-using OpenDoors.Api.Repositories.Vagas;
-using OpenDoors.Api.Services.CandidaturaHistoricos;
-using OpenDoors.Api.Services.Candidaturas;
-using OpenDoors.Api.Services.Empresas;
-using OpenDoors.Api.Services.Estudantes;
-using OpenDoors.Api.Services.IA;
-using OpenDoors.Api.Services.Matchs;
-using OpenDoors.Api.Services.Notificacoes;
-using OpenDoors.Api.Services.TesteRespostas;
-using OpenDoors.Api.Services.TesteVocacionais;
-using OpenDoors.Api.Services.Vagas;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ============================================
 // CONFIGURAÇÕES DOS SERVIÇOS
 // ============================================
-
-
 
 // Adiciona suporte a Controllers (as classes que vão receber as requisições HTTP)
 builder.Services.AddControllers()
@@ -87,67 +58,56 @@ builder.Services.AddSingleton<Supabase.Client>(_ =>
 });
 
 // ============================================
+// AUTENTICAÇÃO JWT (Supabase)
+// ============================================
+
+// Busca as chaves públicas do Supabase (ES256) e faz cache em memória
+var jwksUri = $"{supabaseUrl}/auth/v1/.well-known/jwks.json";
+IList<SecurityKey>? cachedJwksKeys = null;
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            IssuerSigningKeyResolver = (_, _, _, _) =>
+            {
+                if (cachedJwksKeys == null)
+                {
+                    using var http = new System.Net.Http.HttpClient();
+                    var jwksJson = http.GetStringAsync(jwksUri).Result;
+                    cachedJwksKeys = new JsonWebKeySet(jwksJson).GetSigningKeys();
+                }
+                return cachedJwksKeys;
+            }
+        };
+    });
+
+// ============================================
 // CONFIGURAÇÃO DA IA (Groq + Services)
 // ============================================
 
-builder.Services.AddHttpClient<GroqService>()
-    .ConfigureHttpClient((sp, client) =>
-    {
-        var config = sp.GetRequiredService<IConfiguration>();
-        var apiKey = config["Groq:ApiKey"];
-        if (!string.IsNullOrEmpty(apiKey))
-        {
-            client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-        }
-    });
+// Registro correto do GroqService — permite injeção automática em outros services
+builder.Services.AddHttpClient<OpenDoors.Api.Services.GroqService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.GroqService>();
 
-builder.Services.AddScoped<IChatIAService>(sp => sp.GetRequiredService<GroqService>());
+builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarCurriculoService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarTesteService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.GerarScoreService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.GerarPerguntasMensaisService>();
 
-builder.Services.AddScoped<IEstudanteRepository, EstudanteRepositorySupabase>();
-builder.Services.AddScoped<IEstudanteService, EstudanteService>();
-
-builder.Services.AddScoped<IAnalisarCurriculoService, AnalisarCurriculoService>();
-builder.Services.AddScoped<IAnalisarTesteService, AnalisarTesteService>();
-builder.Services.AddScoped<IGerarScoreService, GerarScoreService>();
-
-builder.Services.AddScoped<IEmpresaRepository, EmpresaRepositorySupabase>();
-builder.Services.AddScoped<IEmpresaService, EmpresaService>();
-
-builder.Services.AddScoped<ICandidaturaRepository, CandidaturaRepositorySupabase>();
-builder.Services.AddScoped<ICandidaturaService, CandidaturaService>();
-
-// CandidaturaHistorico
-builder.Services.AddScoped<ICandidaturaHistoricoRepository, CandidaturaHistoricoRepositorySupabase>();
-builder.Services.AddScoped<ICandidaturaHistoricoService, CandidaturaHistoricoService>();
-
-// Match
-builder.Services.AddScoped<IMatchRepository, MatchRepositorySupabase>();
-builder.Services.AddScoped<IMatchService, MatchService>();
-
-// Notificacao
-builder.Services.AddScoped<INotificacaoRepository, NotificacaoRepositorySupabase>();
-builder.Services.AddScoped<INotificacaoService, NotificacaoService>();
-
-// TesteResposta
-builder.Services.AddScoped<ITesteRespostaRepository, TesteRespostaRepositorySupabase>();
-builder.Services.AddScoped<ITesteRespostaService, TesteRespostaService>();
-
-// TesteVocacional
-builder.Services.AddScoped<ITesteVocacionalRepository, TesteVocacionalRepositorySupabase>();
-builder.Services.AddScoped<ITesteVocacionalService, TesteVocacionalService>();
-
-// Vaga
-builder.Services.AddScoped<IVagaRepository, VagaRepositorySupabase>();
-builder.Services.AddScoped<IVagaService, VagaService>();
+builder.Services.AddHttpClient<OpenDoors.Api.Services.JoobleService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.JoobleService>();
 
 // ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
 // ============================================
 
 var app = builder.Build();
-
-app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 // Em ambiente de desenvolvimento, mostra o Swagger
 if (app.Environment.IsDevelopment())
@@ -157,6 +117,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("PermitirFrontend");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

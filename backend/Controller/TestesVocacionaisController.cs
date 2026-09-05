@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.Interfaces.TestesVocacionais;
 
 namespace OpenDoors.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/testes-vocacionais")]
     public class TestesVocacionaisController : ControllerBase

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
 using OpenDoors.Api.Interfaces.Estudantes;
@@ -5,6 +6,7 @@ using OpenDoors.Api.Models;
 
 namespace OpenDoors.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class EstudanteController : ControllerBase
@@ -35,6 +37,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // GET /api/estudantes/{id}
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> BuscarPorId(Guid id)
         {

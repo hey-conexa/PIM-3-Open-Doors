@@ -14,7 +14,11 @@ namespace OpenDoors.Api.DTOs
     {
         public int PerguntaId { get; set; }
         public string Pergunta { get; set; } = "";
-        public string Resposta { get; set; } = "";
+        public string Resposta { get; set; } = ""; // valor 1-7 (escala Likert)
+
+        // Categoria da pergunta (ex: RIASEC_Social, BigFive_Abertura)
+        // Opcional — se não vier do frontend, o service usa "geral"
+        public string? Categoria { get; set; }
     }
 
     public class GerarScoreRequestDto
@@ -33,6 +37,7 @@ namespace OpenDoors.Api.DTOs
         public List<ExperienciaDto> Experiencias { get; set; } = new();
         public string NivelExperiencia { get; set; } = "";
         public List<string> AreasAtuacao { get; set; } = new();
+        public string? CurriculoUrl { get; set; }
     }
 
     public class ExperienciaDto

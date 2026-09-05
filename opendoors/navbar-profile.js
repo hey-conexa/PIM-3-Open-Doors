@@ -87,6 +87,7 @@ function renderProfileBtn() {
   const btnLabel   = document.getElementById('profileBtnLabel');
   const guestDiv   = document.getElementById('drawerGuest');
   const studentDiv = document.getElementById('drawerStudent');
+  const companyDiv = document.getElementById('drawerCompany');
   const btn        = document.getElementById('profileBtn');
 
   if (session?.type === 'student') {
@@ -102,12 +103,36 @@ function renderProfileBtn() {
 
     if (guestDiv)   guestDiv.style.display   = 'none';
     if (studentDiv) studentDiv.style.display = 'block';
+    if (companyDiv) companyDiv.style.display = 'none';
+
+  } else if (session?.type === 'company') {
+    const shortName = session.name?.split(' ')[0] || 'Empresa';
+    const initial   = shortName.charAt(0).toUpperCase();
+
+    if (btnLabel)   btnLabel.textContent = shortName;
+    if (btn)        btn.setAttribute('aria-label', `Painel da empresa ${shortName} — abrir menu`);
+    if (document.getElementById('drawerAvatar'))
+      document.getElementById('drawerAvatar').textContent = initial;
+    if (document.getElementById('drawerUserName'))
+      document.getElementById('drawerUserName').textContent = session.name || 'Empresa';
+
+    if (guestDiv)   guestDiv.style.display   = 'none';
+    if (studentDiv) studentDiv.style.display = 'none';
+    if (companyDiv) companyDiv.style.display = 'block';
+
   } else {
     if (btnLabel)   btnLabel.textContent = 'Entrar';
     if (btn)        btn.setAttribute('aria-label', 'Entrar ou criar conta — abrir menu');
     if (guestDiv)   guestDiv.style.display   = 'block';
     if (studentDiv) studentDiv.style.display = 'none';
+    if (companyDiv) companyDiv.style.display = 'none';
   }
+}
+
+function logoutCompany() {
+  clearSession();
+  closeProfileDrawer();
+  renderProfileBtn();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

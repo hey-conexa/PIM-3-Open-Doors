@@ -2,6 +2,28 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+*, *::before, *::after {
+  font-family: "Plus Jakarta Sans", "Plus Jakarta Sans", "DM Sans", sans-serif !important;
+  font-weight: 400 !important;
+}
+
+p, span, li, a, input, textarea, select {
+  font-weight: 500 !important;
+}
+
+h1, h2, h3, h4, h5, h6, strong, b {
+  font-weight: 700 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
 .skip-link {
   position: absolute;
   top: -56px;
@@ -10,7 +32,7 @@
   color: #fff;
   padding: 10px 20px;
   border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   text-decoration: none;
@@ -52,16 +74,16 @@ input[aria-invalid="true"] {
 /* TEMA CLARO (PADRÃO) */
 
 [data-theme="light"] {
-  --bg:            #FAFDF6;
-  --surface:       #f0f8fc;
-  --surface-2:     #e8f4f9;
-  --border:        rgba(8,124,167,0.14);
-  --border-focus:  rgba(8,124,167,0.45);
-  --text:          #1c2b35;
+  --bg:            #c6dde8;
+  --surface:       #f1f4f3;
+  --surface-2:     #e7eeec;
+  --border:        rgba(10,124,160,0.24);
+  --border-focus:  rgba(10,124,160,0.52);
+  --text:          #16313d;
   --text-muted:    #3a5a6a;
   --text-hint:     #7a9aaa;
-  --panel-bg:      #e0f7ff;
-  --panel-border:  rgba(8,124,167,0.18);
+  --panel-bg:      #dce7e4;
+  --panel-border:  rgba(10,124,160,0.30);
   --input-bg:      #fff;
   --input-bg-focus:#f5fbff;
   --success:       #16a34a;
@@ -74,18 +96,18 @@ input[aria-invalid="true"] {
 /* TEMA ESCURO */
 
 [data-theme="dark"] {
-  --bg:            #0f1117;
-  --surface:       #181b22;
-  --surface-2:     #1f232d;
-  --border:        rgba(255,255,255,0.08);
+  --bg:            #0d1418;
+  --surface:       #172227;
+  --surface-2:     #1e2b31;
+  --border:        rgba(160,183,191,0.24);
   --border-focus:  rgba(8,124,167,0.6);
   --text:          #eef0f4;
   --text-muted:    #8a909e;
   --text-hint:     #555b6a;
-  --panel-bg:      #131820;
-  --panel-border:  rgba(8,124,167,0.25);
-  --input-bg:      #1f232d;
-  --input-bg-focus:#252a35;
+  --panel-bg:      #132026;
+  --panel-border:  rgba(160,183,191,0.32);
+  --input-bg:      #1a262c;
+  --input-bg-focus:#223239;
   --success:       #22c55e;
   --error:         #ef4444;
   --warn:          #f59e0b;
@@ -95,7 +117,7 @@ input[aria-invalid="true"] {
 html, body { height: 100%; }
 
 body {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -132,7 +154,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   color: var(--text-muted);
@@ -160,7 +182,7 @@ body {
 [data-theme="dark"] .logo-img { filter: brightness(0) invert(1); opacity: 0.85; }
 
 .page-badge {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--blue);
@@ -180,7 +202,7 @@ body {
   padding: 5px 12px;
   cursor: pointer;
   color: var(--text-muted);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 0.82rem;
   font-weight: 500;
   transition: var(--transition);
@@ -217,6 +239,7 @@ body {
   height: calc(100vh - var(--nav-h));
   overflow: hidden;
   transition: background var(--transition), border-color var(--transition);
+  box-shadow: inset -1px 0 0 var(--panel-border);
 }
 
 .brand-headline {
@@ -277,6 +300,15 @@ body {
   border-radius: var(--radius-md);
   padding: 14px;
   transition: background var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 24px;
 }
 .stat-value {
   font-family: "Oswald", sans-serif;
@@ -347,7 +379,7 @@ body {
   border-radius: var(--radius-md);
   color: var(--text-muted);
   font-size: 13px; font-weight: 500;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   cursor: pointer; transition: var(--transition); white-space: nowrap;
 }
 .social-btn:hover { border-color: var(--blue); color: var(--text); background: var(--surface); }
@@ -386,7 +418,7 @@ input[type="date"] {
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   color: var(--text);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 14px; outline: none;
   transition: border-color var(--transition), background var(--transition);
   -webkit-appearance: none; appearance: none;
@@ -470,7 +502,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cur
   width: 100%; padding: 11px 20px;
   background: var(--blue); color: #fff;
   border: none; border-radius: var(--radius-md);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 14px; font-weight: 600;
   cursor: pointer;
   transition: background var(--transition), transform 0.1s;
@@ -483,7 +515,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cur
   width: 100%; padding: 11px 20px;
   background: transparent; color: var(--text-muted);
   border: 1px solid var(--border); border-radius: var(--radius-md);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 14px; font-weight: 500;
   cursor: pointer; transition: var(--transition);
 }
@@ -581,7 +613,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cur
   gap: 8px;
   width: 100%;
   text-decoration: none;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 14px;
   font-weight: 600;
   padding: 11px 20px;
@@ -618,7 +650,7 @@ a.success-btn.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
   background: none;
   border: none;
   padding: 0;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 13px;
   font-weight: 500;
   color: var(--text-hint);
@@ -653,7 +685,7 @@ a.success-btn.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   color: var(--text);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 14px;
   outline: none;
   appearance: none;
@@ -750,7 +782,7 @@ input[type="month"] {
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   color: var(--text);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
   font-size: 14px; outline: none;
   transition: border-color var(--transition), background var(--transition);
   -webkit-appearance: none; appearance: none;
@@ -761,6 +793,46 @@ input[type="month"]:focus {
 }
 input[type="month"]::-webkit-calendar-picker-indicator { filter: invert(0.4); cursor: pointer; }
 [data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+}
+.tab {
+  flex: 1;
+  padding: 9px 16px;
+  border: none;
+  border-radius: calc(var(--radius-sm) - 2px);
+  background: none;
+  color: var(--text-hint);
+  font-family: "Plus Jakarta Sans", "DM Sans", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.tab:hover { color: var(--blue); }
+.tab.active {
+  background: var(--white);
+  color: var(--blue);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+[data-theme="dark"] .tab.active {
+  background: #1f2937;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* FORÇA DA SENHA — complemento */
+.pw-strength { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
+.pw-bars { display: flex; gap: 4px; flex: 1; }
+.pw-bars .pw-bar { flex: 1; height: 3px; border-radius: 3px; background: var(--border); transition: background 0.3s; }
+.pw-label { font-size: 11px; color: var(--text-hint); min-width: 50px; }
 
 /* FIM DO CSS GERAL */
 
