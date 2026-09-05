@@ -11,12 +11,10 @@ namespace OpenDoors.Api.Controllers
     [Route("api/[controller]")]
     public class EstudanteController : ControllerBase
     {
-        private readonly Supabase.Client _supabase;
         private readonly IEstudanteService _service;
 
-        public EstudanteController(Supabase.Client supabase, IEstudanteService service)
+        public EstudanteController(IEstudanteService service)
         {
-            _supabase = supabase;
             _service = service;
         }
 
