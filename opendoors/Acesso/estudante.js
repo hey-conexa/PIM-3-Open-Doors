@@ -1,6 +1,6 @@
 /* Lógica exclusiva da página AcessoEstudantes */
 
-const API = 'https://monotype-sudoku-arousal.ngrok-free.dev';
+const API = 'http://localhost:5000';
 
 // LOGIN SOCIAL
 function socialLogin(provider) {
@@ -71,11 +71,24 @@ async function studentLogin() {
       return showError('login-email', msg);
     }
 
-    const res = await fetch(`${API}/api/estudantes/${data.user.id}`, {
+    let res = await fetch(`${API}/api/estudantes/${data.user.id}`, {
       headers: { 'Authorization': `Bearer ${data.session.access_token}`, 'ngrok-skip-browser-warning': '1' }
     });
+
+    if (!res.ok && data.user.email) {
+      res = await fetch(`${API}/api/estudantes/por-email?email=${encodeURIComponent(data.user.email)}`, {
+        headers: { 'Authorization': `Bearer ${data.session.access_token}`, 'ngrok-skip-browser-warning': '1' }
+      });
+    }
+
     if (!res.ok) return showError('login-email', 'Perfil de estudante não encontrado.');
-    const estudante = await res.json();
+
+    const payload = await res.json();
+    const estudante = Array.isArray(payload) ? payload[0] : payload;
+
+    if (!estudante?.id) {
+      return showError('login-email', 'Perfil de estudante encontrado, mas sem identificador válido.');
+    }
 
     localStorage.setItem('od-session', JSON.stringify({
       type:               'student',
@@ -315,7 +328,10 @@ async function studentRegister() {
 
     const res = await fetch(`${API}/api/estudantes`, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authData?.session?.access_token ? { Authorization: `Bearer ${authData.session.access_token}` } : {})
+      },
       body:    JSON.stringify(payload)
     });
 

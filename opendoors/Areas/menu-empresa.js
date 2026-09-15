@@ -1,6 +1,6 @@
 /* Painel da Empresa — Open Doors */
 
-const API = 'https://monotype-sudoku-arousal.ngrok-free.dev';
+const API = 'http://localhost:5000';
 
 const HABILIDADES_OPCOES = [
     'Comunicacao', 'Trabalho em equipe', 'Lideranca', 'Organizacao', 'Resolucao de problemas',

@@ -1,6 +1,6 @@
 /* Lógica exclusiva da página AcessoEmpresas */
 
-const API = 'https://monotype-sudoku-arousal.ngrok-free.dev';
+const API = 'http://localhost:5000';
 
 // ──────────────────────────────────────────────
 // TABS
