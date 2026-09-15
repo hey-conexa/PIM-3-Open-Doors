@@ -1,6 +1,6 @@
 /* Lógica da Área do Estudante e Teste Vocacional — Escala Likert */
 
-const API = 'http://localhost:5000'
+const API = 'https://opendoors-api.onrender.com';
 let currentSession = null
 let currentStudent = null
 
