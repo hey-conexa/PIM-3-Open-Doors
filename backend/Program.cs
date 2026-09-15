@@ -29,14 +29,15 @@ builder.Services.AddCors(options =>
             if (string.IsNullOrWhiteSpace(origin))
                 return false;
 
-            return origin.Contains("localhost", StringComparison.OrdinalIgnoreCase)
-                || origin.Contains("127.0.0.1", StringComparison.OrdinalIgnoreCase)
-                || origin.Contains("opendoorsconexa.netlify.app", StringComparison.OrdinalIgnoreCase);
+            return origin.Equals("https://opendoorsconexa.netlify.app", StringComparison.OrdinalIgnoreCase)
+                || origin.StartsWith("http://localhost:", StringComparison.OrdinalIgnoreCase)
+                || origin.StartsWith("http://127.0.0.1:", StringComparison.OrdinalIgnoreCase);
         })
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
 });
+
 // ============================================
 // CONFIGURAÇÃO DO SUPABASE
 // ============================================
@@ -125,9 +126,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("PermitirFrontend");
 app.UseAuthentication();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthorization();
-app.UseSwagger();
-app.UseSwaggerUI();
 app.MapControllers();
 
 app.Run();
