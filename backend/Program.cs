@@ -119,8 +119,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors("PermitirFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 app.UseSwagger();
 app.UseSwaggerUI();
+app.MapControllers();
 
 app.Run();
