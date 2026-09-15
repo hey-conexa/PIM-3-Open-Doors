@@ -24,12 +24,19 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.SetIsOriginAllowed(origin =>
+        {
+            if (string.IsNullOrWhiteSpace(origin))
+                return false;
+
+            return origin.Contains("localhost", StringComparison.OrdinalIgnoreCase)
+                || origin.Contains("127.0.0.1", StringComparison.OrdinalIgnoreCase)
+                || origin.Contains("opendoorsconexa.netlify.app", StringComparison.OrdinalIgnoreCase);
+        })
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
 });
-
 // ============================================
 // CONFIGURAÇÃO DO SUPABASE
 // ============================================
