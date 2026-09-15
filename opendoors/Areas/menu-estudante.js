@@ -1,6 +1,6 @@
 /* Lógica da Área do Estudante e Teste Vocacional — Escala Likert */
 
-const API = 'https://monotype-sudoku-arousal.ngrok-free.dev'
+const API = 'http://localhost:5000'
 let currentSession = null
 let currentStudent = null
 
@@ -43,7 +43,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const raw     = localStorage.getItem('od-session')
         const session = raw ? JSON.parse(raw) : null
 
-        if (!session || session.type !== 'student') {
+        if (!session || session.type !== 'student' || !session.id) {
+            localStorage.removeItem('od-session')
             window.location.href = '../Acesso/AcessoEstudantes.html'
             return
         }
@@ -63,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (session.id) {
             try {
-                const res = await fetch(`${API}/api/testes-vocacionais/estudante/${session.id}`)
+                const res = await authFetch(`${API}/api/testes-vocacionais/estudante/${session.id}`)
                 if (res.ok) {
                     const teste = await res.json()
                     if (teste && teste.analisadoIa) {
