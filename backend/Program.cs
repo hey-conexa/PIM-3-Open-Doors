@@ -120,5 +120,7 @@ app.UseCors("PermitirFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();
