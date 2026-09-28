@@ -2,7 +2,6 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using OpenDoors.Api.DTOs;
 using OpenDoors.Api.Exceptions;
-using OpenDoors.Api.Interfaces.Estudantes;
 using OpenDoors.Api.Interfaces.IA;
 using OpenDoors.Api.Models;
 using UglyToad.PdfPig;
@@ -14,25 +13,15 @@ namespace OpenDoors.Api.Services.IA
     /// </summary>
     public class AnalisarCurriculoService : IAnalisarCurriculoService
     {
-<<<<<<< HEAD:backend/Services/IA/AnalisarCurriculoService.cs
         private readonly IChatIAService _groq;
-        private readonly IEstudanteRepository _estudanteRepository;
-
-        public AnalisarCurriculoService(IChatIAService groq, IEstudanteRepository estudanteRepository)
-        {
-            _groq = groq;
-            _estudanteRepository = estudanteRepository;
-=======
-        private readonly GroqService _groq;
         private readonly Supabase.Client _supabase;
         private readonly string _supabaseUrl;
 
-        public AnalisarCurriculoService(GroqService groq, Supabase.Client supabase, IConfiguration config)
+        public AnalisarCurriculoService(IChatIAService groq, Supabase.Client supabase, IConfiguration config)
         {
             _groq = groq;
             _supabase = supabase;
             _supabaseUrl = config["Supabase:Url"]?.TrimEnd('/') ?? "";
->>>>>>> main:backend/Services/AnalisarCurriculoService.cs
         }
 
         /// <summary>
@@ -108,31 +97,22 @@ namespace OpenDoors.Api.Services.IA
                 """;
 
             var dados = await _groq.ChatJsonAsync<CurriculoAnalisadoDto>(system, user);
-<<<<<<< HEAD:backend/Services/IA/AnalisarCurriculoService.cs
-            var estudante = await _estudanteRepository.BuscarPorId(estudanteId);
-=======
 
             // 3. Atualiza o estudante no banco com habilidades + URL do currículo
             var estudante = await _supabase
                 .From<Estudante>()
                 .Where(e => e.Id == estudanteId)
                 .Single();
->>>>>>> main:backend/Services/AnalisarCurriculoService.cs
 
             if (estudante == null)
                 throw new NotFoundException("Não foi possível encontrar o estudante.");
 
             estudante.HabilidadesExtraidas = dados.Habilidades;
             estudante.TemCurriculo = true;
-<<<<<<< HEAD:backend/Services/IA/AnalisarCurriculoService.cs
-
-            await _estudanteRepository.Atualizar(estudante);
-=======
             if (curriculoUrl != null)
                 estudante.CurriculoUrl = curriculoUrl;
 
             await estudante.Update<Estudante>();
->>>>>>> main:backend/Services/AnalisarCurriculoService.cs
 
             // Devolve a URL para o frontend também
             dados.CurriculoUrl = curriculoUrl;

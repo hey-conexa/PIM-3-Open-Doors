@@ -1,4 +1,4 @@
-using OpenDoors.Api.Interfaces.IA;
+using OpenDoors.Api.Interfaces.TestesVocacionais;
 using OpenDoors.Api.Models;
 
 namespace OpenDoors.Api.Repositories.IA

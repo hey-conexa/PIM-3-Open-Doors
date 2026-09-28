@@ -53,13 +53,13 @@ namespace OpenDoors.Api.Controllers
 
         // ===========================================
         // POST /api/ia/gerar-score
-        // Calcula compatibilidade Estudante x Vaga
+        // Calcula score final do estudante
         // ===========================================
         [HttpPost("gerar-score")]
         public async Task<IActionResult> GerarScore([FromBody] GerarScoreRequestDto body)
         {
-            if (body.EstudanteId == Guid.Empty || body.VagaId == 0)
-                throw new BadRequestException("estudanteId e vagaId são obrigatórios");
+            if (body.EstudanteId == Guid.Empty)
+                throw new BadRequestException("estudanteId é obrigatório");
 
             var resultado = await _analisarIaService.GerarScoreAsync(body.EstudanteId, body.VagaId);
             

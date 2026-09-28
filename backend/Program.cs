@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using OpenDoors.Api.Middleware;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using OpenDoors.Api.Interfaces.TestesVocacionais;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,11 +96,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // ============================================
 
 // Registro correto do GroqService — permite injeção automática em outros services
-builder.Services.AddHttpClient<OpenDoors.Api.Services.GroqService>();
-builder.Services.AddScoped<OpenDoors.Api.Services.GroqService>();
+builder.Services.AddHttpClient<OpenDoors.Api.Services.IA.GroqService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.IA.GroqService>();
 
-builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarCurriculoService>();
-builder.Services.AddScoped<OpenDoors.Api.Services.AnalisarTesteService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.IA.AnalisarCurriculoService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.IA.AnalisarTesteService>();
 builder.Services.AddScoped<OpenDoors.Api.Services.GerarScoreService>();
 builder.Services.AddScoped<OpenDoors.Api.Services.GerarPerguntasMensaisService>();
 
@@ -109,7 +112,7 @@ builder.Services.AddScoped<OpenDoors.Api.Services.JoobleService>();
 // ============================================
 
 // Repositório para Testes Vocacionais
-builder.Services.AddScoped<OpenDoors.Api.Interfaces.IA.ITesteVocacionalRepository, 
+builder.Services.AddScoped<ITesteVocacionalRepository, 
     OpenDoors.Api.Repositories.IA.TesteVocacionalRepository>();
 
 // Serviço que orquestra análises de IA
@@ -166,7 +169,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Registra o middleware de tratamento global de exceções
-app.UseExceptionHandlerMiddleware();
+app.UseExceptionHandler();
 
 app.UseCors("PermitirFrontend");
 app.UseAuthentication();

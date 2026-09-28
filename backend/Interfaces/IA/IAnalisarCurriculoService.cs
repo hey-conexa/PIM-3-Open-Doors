@@ -4,6 +4,6 @@ namespace OpenDoors.Api.Interfaces.IA
 {
     public interface IAnalisarCurriculoService
     {
-        public Task<CurriculoAnalisadoDto> AnalisarAsync(Guid estudanteId, Stream pdfStream);
+        public Task<CurriculoAnalisadoDto> AnalisarAsync(Guid estudanteId, Stream pdfStream, string fileName);
     }
 }

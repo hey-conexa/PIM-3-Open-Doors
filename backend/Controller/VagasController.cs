@@ -79,9 +79,9 @@ namespace OpenDoors.Api.Controllers
         // PATCH /api/vagas/{id}/status — Atualiza só o status
         // ===========================================
         [HttpPatch("{id}/status")]
-        public async Task<IActionResult> AtualizarStatus(int id, [FromBody] string novoStatus)
+        public async Task<IActionResult> AtualizarStatus(int id, [FromBody] VagaDto dto)
         {
-            var resultado = await _service.AtualizarStatus(id, novoStatus);
+            var resultado = await _service.AtualizarStatus(id, dto.Status);
             return Ok(resultado);
         }
 

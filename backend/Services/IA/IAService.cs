@@ -2,6 +2,7 @@
 using OpenDoors.Api.Exceptions;
 using OpenDoors.Api.Interfaces.Estudantes;
 using OpenDoors.Api.Interfaces.IA;
+using OpenDoors.Api.Interfaces.TestesRespostas;
 using OpenDoors.Api.Interfaces.TestesVocacionais;
 using OpenDoors.Api.Models;
 
@@ -11,6 +12,7 @@ namespace OpenDoors.Api.Services.IA
     {
         private readonly IAnalisarCurriculoService _curriculoService;
         private readonly IAnalisarTesteService _testeService;
+        private readonly ITesteRespostaRepository _testeRespostaRepository;
         private readonly ITesteVocacionalRepository _testeVocacionalRepository;
         private readonly IEstudanteRepository _estudanteRepository;
         private readonly IGerarScoreService _scoreService;
@@ -18,6 +20,7 @@ namespace OpenDoors.Api.Services.IA
         public IAService(
             IAnalisarCurriculoService curriculoService,
             IAnalisarTesteService analisarTeste,
+            ITesteRespostaRepository testeRespostaRepository,
             ITesteVocacionalRepository testeVocacionalRepository,
             IEstudanteRepository estudanteRepository,
             IGerarScoreService scoreService
@@ -25,9 +28,10 @@ namespace OpenDoors.Api.Services.IA
         {
             _curriculoService = curriculoService;
             _testeService = analisarTeste;
+            _testeRespostaRepository = testeRespostaRepository;
+            _testeVocacionalRepository = testeVocacionalRepository;
             _scoreService = scoreService;
             _estudanteRepository = estudanteRepository;
-            _testeVocacionalRepository = testeVocacionalRepository;
         }
 
         public async Task<CurriculoAnalisadoDto> AnalisarCurriculo(Guid estudanteId, IFormFile curriculo)
@@ -36,7 +40,7 @@ namespace OpenDoors.Api.Services.IA
                 throw new BadRequestException("estudanteId e curriculo são obrigatórios");
 
             await using var stream = curriculo.OpenReadStream();
-            var resultado = await _curriculoService.AnalisarAsync(estudanteId, stream);
+            var resultado = await _curriculoService.AnalisarAsync(estudanteId, stream, curriculo.FileName);
             return resultado;
         }
 
@@ -51,7 +55,7 @@ namespace OpenDoors.Api.Services.IA
 
             var resultado = await _testeService.AnalisarAsync(request.Respostas);
 
-            var testeExistente = await _testeVocacionalRepository.BuscarPorEstudante(request.EstudanteId);
+            var testeExistente = await _testeVocacionalRepository.BuscarPorEstudanteId(request.EstudanteId);
 
             if (testeExistente != null)
             {
@@ -60,7 +64,7 @@ namespace OpenDoors.Api.Services.IA
                 testeExistente.PontosFortes = resultado.PontosFortes;
                 testeExistente.DescricaoPerfil = resultado.DescricaoPerfil;
                 testeExistente.AnalisadoIa = true;
-                await testeExistente.Update<TesteVocacional>();
+                await _testeVocacionalRepository.Atualizar(testeExistente);
             }
             else
             {

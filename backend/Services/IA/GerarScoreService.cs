@@ -1,5 +1,7 @@
 using OpenDoors.Api.DTOs;
 using OpenDoors.Api.Models;
+using OpenDoors.Api.Services.IA;
+
 
 namespace OpenDoors.Api.Services
 {
@@ -9,10 +11,10 @@ namespace OpenDoors.Api.Services
     /// </summary>
     public class GerarScoreService
     {
-        private readonly GroqService _groq;
+        private readonly IAService _groq;
         private readonly Supabase.Client _supabase;
 
-        public GerarScoreService(GroqService groq, Supabase.Client supabase)
+        public GerarScoreService(IAService groq, Supabase.Client supabase)
         {
             _groq = groq;
             _supabase = supabase;

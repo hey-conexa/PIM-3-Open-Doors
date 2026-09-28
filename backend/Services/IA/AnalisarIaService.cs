@@ -4,6 +4,7 @@ using OpenDoors.Api.Interfaces.Estudantes;
 using OpenDoors.Api.Models;
 using OpenDoors.Api.Services;
 using OpenDoors.Api.Exceptions;
+using OpenDoors.Api.Interfaces.TestesVocacionais;
 
 namespace OpenDoors.Api.Services.IA
 {

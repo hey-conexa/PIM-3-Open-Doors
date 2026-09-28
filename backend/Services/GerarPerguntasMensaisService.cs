@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using OpenDoors.Api.Models;
+using OpenDoors.Api.Services.IA;
 
 namespace OpenDoors.Api.Services
 {
