@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using OpenDoors.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,6 +117,18 @@ builder.Services.AddScoped<OpenDoors.Api.Interfaces.IA.IAnalisarIaService,
     OpenDoors.Api.Services.IA.AnalisarIaService>();
 
 // ============================================
+// REPOSITÓRIOS E SERVIÇOS - VAGAS (REFATORADO)
+// ============================================
+
+// Repositório para Vagas
+builder.Services.AddScoped<OpenDoors.Api.Interfaces.Vagas.IVagaRepository, 
+    OpenDoors.Api.Repositories.Vagas.VagaRepository>();
+
+// Serviço de Vagas
+builder.Services.AddScoped<OpenDoors.Api.Interfaces.Vagas.IVagaService, 
+    OpenDoors.Api.Services.Vagas.VagaService>();
+
+// ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
 // ============================================
 
@@ -127,6 +140,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Registra o middleware de tratamento global de exceções
+app.UseExceptionHandlerMiddleware();
 
 app.UseCors("PermitirFrontend");
 app.UseAuthentication();
