@@ -129,6 +129,18 @@ builder.Services.AddScoped<OpenDoors.Api.Interfaces.Vagas.IVagaService,
     OpenDoors.Api.Services.Vagas.VagaService>();
 
 // ============================================
+// REPOSITÓRIOS E SERVIÇOS - PERGUNTAS TESTE (REFATORADO)
+// ============================================
+
+// Repositório para Perguntas de Teste
+builder.Services.AddScoped<OpenDoors.Api.Interfaces.PerguntasTeste.IPerguntaTesteRepository, 
+    OpenDoors.Api.Repositories.PerguntasTeste.PerguntaTesteRepository>();
+
+// Serviço de Perguntas de Teste
+builder.Services.AddScoped<OpenDoors.Api.Interfaces.PerguntasTeste.IPerguntaTesteService, 
+    OpenDoors.Api.Services.PerguntasTeste.PerguntaTesteService>();
+
+// ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
 // ============================================
 
