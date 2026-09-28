@@ -104,6 +104,18 @@ builder.Services.AddHttpClient<OpenDoors.Api.Services.JoobleService>();
 builder.Services.AddScoped<OpenDoors.Api.Services.JoobleService>();
 
 // ============================================
+// REPOSITÓRIOS E SERVIÇOS - IA (REFATORADO)
+// ============================================
+
+// Repositório para Testes Vocacionais
+builder.Services.AddScoped<OpenDoors.Api.Interfaces.IA.ITesteVocacionalRepository, 
+    OpenDoors.Api.Repositories.IA.TesteVocacionalRepository>();
+
+// Serviço que orquestra análises de IA
+builder.Services.AddScoped<OpenDoors.Api.Interfaces.IA.IAnalisarIaService, 
+    OpenDoors.Api.Services.IA.AnalisarIaService>();
+
+// ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
 // ============================================
 
