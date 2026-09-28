@@ -141,6 +141,18 @@ builder.Services.AddScoped<OpenDoors.Api.Interfaces.PerguntasTeste.IPerguntaTest
     OpenDoors.Api.Services.PerguntasTeste.PerguntaTesteService>();
 
 // ============================================
+// REPOSITÓRIOS E SERVIÇOS - JOOBLE (REFATORADO)
+// ============================================
+
+// Repositório para Jooble
+builder.Services.AddScoped<OpenDoors.Api.Interfaces.Jooble.IJoobleRepository, 
+    OpenDoors.Api.Repositories.Jooble.JoobleRepository>();
+
+// Serviço de Integração Jooble
+builder.Services.AddScoped<OpenDoors.Api.Interfaces.Jooble.IJoobleService, 
+    OpenDoors.Api.Services.Jooble.JoobleIntegrationService>();
+
+// ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
 // ============================================
 

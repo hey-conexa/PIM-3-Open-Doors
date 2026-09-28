@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
-using OpenDoors.Api.Models;
-using OpenDoors.Api.Services;
+using OpenDoors.Api.Interfaces.Jooble;
 
 namespace OpenDoors.Api.Controllers
 {
@@ -11,13 +10,11 @@ namespace OpenDoors.Api.Controllers
     [Route("api/jooble")]
     public class JoobleController : ControllerBase
     {
-        private readonly JoobleService _jooble;
-        private readonly Supabase.Client _supabase;
+        private readonly IJoobleService _service;
 
-        public JoobleController(JoobleService jooble, Supabase.Client supabase)
+        public JoobleController(IJoobleService service)
         {
-            _jooble   = jooble;
-            _supabase = supabase;
+            _service = service;
         }
 
         // GET /api/jooble/buscar?keywords=Engenharia&location=São Paulo&page=1
@@ -26,19 +23,8 @@ namespace OpenDoors.Api.Controllers
         [HttpGet("buscar")]
         public async Task<IActionResult> Buscar([FromQuery] JoobleBuscaDto filtros)
         {
-            try
-            {
-                var resultado = await _jooble.BuscarVagasAsync(filtros);
-                return Ok(new
-                {
-                    total  = resultado.TotalCount,
-                    vagas  = resultado.Jobs
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var resultado = await _service.BuscarVagasAsync(filtros);
+            return Ok(resultado);
         }
 
         // POST /api/jooble/sincronizar
@@ -56,48 +42,8 @@ namespace OpenDoors.Api.Controllers
         [HttpPost("sincronizar")]
         public async Task<IActionResult> Sincronizar([FromBody] JoobleBuscaDto filtros)
         {
-            try
-            {
-                var resultado = await _jooble.BuscarVagasAsync(filtros);
-
-                if (resultado.Jobs == null || resultado.Jobs.Count == 0)
-                    return Ok(new { mensagem = "Nenhuma vaga retornada pela Jooble.", salvas = 0 });
-
-                int salvas    = 0;
-                int ignoradas = 0;
-
-                foreach (var job in resultado.Jobs)
-                {
-                    // Verifica se já existe uma vaga com o mesmo título e cidade
-                    var vaga = JoobleService.ConverterParaVaga(job);
-
-                    var existentes = await _supabase
-                        .From<Vaga>()
-                        .Where(v => v.Titulo == vaga.Titulo && v.Cidade == vaga.Cidade)
-                        .Get();
-
-                    if (existentes.Models.Any())
-                    {
-                        ignoradas++;
-                        continue;
-                    }
-
-                    await _supabase.From<Vaga>().Insert(vaga);
-                    salvas++;
-                }
-
-                return Ok(new
-                {
-                    mensagem  = "Sincronização concluída.",
-                    salvas,
-                    ignoradas,
-                    total     = resultado.TotalCount
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
-            }
+            var resultado = await _service.SincronizarVagasAsync(filtros);
+            return Ok(resultado);
         }
     }
 }
