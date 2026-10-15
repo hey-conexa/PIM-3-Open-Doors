@@ -103,6 +103,8 @@ builder.Services.AddScoped<OpenDoors.Api.Services.GerarPerguntasMensaisService>(
 builder.Services.AddHttpClient<OpenDoors.Api.Services.JoobleService>();
 builder.Services.AddScoped<OpenDoors.Api.Services.JoobleService>();
 
+builder.Services.AddScoped<OpenDoors.Api.Services.JwtService>();
+
 // ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
 // ============================================

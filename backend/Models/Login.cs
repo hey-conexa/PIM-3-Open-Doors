@@ -16,10 +16,19 @@ namespace OpenDoors.Api.Models
 
         // Email do usuário
         [Column("email")]
-        public string? Email { get; set; }
+        public string Email { get; set; }
 
         // Senha do usuário
         [Column("senha")]
-        public string? Senha { get; set; }
+        public string Senha { get; set; }
+
+        [Column("tipo_usuario")]
+        public TiposUsuario TipoUsuario { get; set; }
+    }
+
+    public enum TiposUsuario
+    {
+        Estudante,
+        Empresa
     }
 }
