@@ -96,6 +96,15 @@ namespace OpenDoors.Api.Controllers
                 if (string.IsNullOrWhiteSpace(dto.Senha))
                     return BadRequest(new { erro = "Senha é obrigatória" });
 
+                // Verifica se o email já está cadastrado
+                var emailJaCadastrado = await _supabase
+                    .From<Login>()
+                    .Where(l => l.Email == dto.Email)
+                    .Get();
+
+                if (emailJaCadastrado.Models != null && emailJaCadastrado.Models.Count > 0)
+                    return BadRequest(new { erro = "Email já cadastrado no sistema" });
+
                 var novo = new Estudante
                 {
                     Id = dto.Id,
