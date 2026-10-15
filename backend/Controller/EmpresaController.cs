@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
+using OpenDoors.Api.Middleware;
 using OpenDoors.Api.Models;
 using OpenDoors.Api.Services;
 
 namespace OpenDoors.Api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class EmpresasController : ControllerBase
@@ -21,6 +21,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // GET /api/empresas
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> ListarTodas()
         {
@@ -37,6 +38,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // GET /api/empresas/ativas
+        [AllowAnonymous]
         [HttpGet("ativas")]
         public async Task<IActionResult> ListarAtivas()
         {
@@ -56,6 +58,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // GET /api/empresas/{id}
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> BuscarPorId(Guid id)
         {
@@ -78,6 +81,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // POST /api/empresas
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Criar([FromBody] CreateEmpresaDto dto)
         {
@@ -166,6 +170,9 @@ namespace OpenDoors.Api.Controllers
         }
 
         // PUT /api/empresas/{id}
+        [Authorize]
+        [AuthorizeRole(TiposUsuario.Empresa)]
+        [AuthorizeOwner("id")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Atualizar(Guid id, [FromBody] CreateEmpresaDto dto)
         {
@@ -207,6 +214,9 @@ namespace OpenDoors.Api.Controllers
         }
 
         // DELETE /api/empresas/{id}
+        [Authorize]
+        [AuthorizeRole(TiposUsuario.Empresa)]
+        [AuthorizeOwner("id")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Deletar(Guid id)
         {
@@ -256,9 +266,7 @@ namespace OpenDoors.Api.Controllers
                 ResponsavelEmail = e.ResponsavelEmail,
                 VagasAtivas = e.VagasAtivas,
                 TotalContratacoes = e.TotalContratacoes,
-                Status = e.Status,
-                CriadoEm = e.CriadoEm,
-                AtualizadoEm = e.AtualizadoEm
+                Status = e.Status
             };
         }
     }

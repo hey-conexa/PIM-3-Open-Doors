@@ -6,7 +6,6 @@ using OpenDoors.Api.Services;
 
 namespace OpenDoors.Api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/jooble")]
     public class JoobleController : ControllerBase
@@ -23,6 +22,7 @@ namespace OpenDoors.Api.Controllers
         // GET /api/jooble/buscar?keywords=Engenharia&location=São Paulo&page=1
         // Busca vagas na Jooble e retorna direto pro frontend — SEM salvar no banco.
         // Útil para exibir vagas externas ao vivo na home do estudante.
+        [AllowAnonymous]
         [HttpGet("buscar")]
         public async Task<IActionResult> Buscar([FromQuery] JoobleBuscaDto filtros)
         {
@@ -53,6 +53,7 @@ namespace OpenDoors.Api.Controllers
         //   "page": 1,
         //   "resultsPerPage": 20
         // }
+        [AllowAnonymous]
         [HttpPost("sincronizar")]
         public async Task<IActionResult> Sincronizar([FromBody] JoobleBuscaDto filtros)
         {

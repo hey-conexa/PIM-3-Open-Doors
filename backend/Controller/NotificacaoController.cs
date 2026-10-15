@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
+using OpenDoors.Api.Middleware;
 using OpenDoors.Api.Models;
 
 namespace OpenDoors.Api.Controllers
@@ -18,6 +19,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // GET /api/notificacoes
+        // Ambos os tipos podem acessar
         [HttpGet]
         public async Task<IActionResult> ListarTodas()
         {
@@ -34,6 +36,8 @@ namespace OpenDoors.Api.Controllers
         }
 
         // GET /api/notificacoes/estudante/{id}
+        // Apenas estudantes podem acessar
+        [AuthorizeRole(TiposUsuario.Estudante)]
         [HttpGet("estudante/{estudanteId}")]
         public async Task<IActionResult> ListarPorEstudante(Guid estudanteId)
         {
@@ -54,6 +58,8 @@ namespace OpenDoors.Api.Controllers
         }
 
         // GET /api/notificacoes/empresa/{id}
+        // Apenas empresas podem acessar
+        [AuthorizeRole(TiposUsuario.Empresa)]
         [HttpGet("empresa/{empresaId}")]
         public async Task<IActionResult> ListarPorEmpresa(Guid empresaId)
         {
@@ -75,6 +81,8 @@ namespace OpenDoors.Api.Controllers
 
         // GET /api/notificacoes/nao-lidas/estudante/{id}
         // Útil pro badge "você tem X notificações novas"
+        // Apenas estudantes podem acessar
+        [AuthorizeRole(TiposUsuario.Estudante)]
         [HttpGet("nao-lidas/estudante/{estudanteId}")]
         public async Task<IActionResult> NaoLidasEstudante(Guid estudanteId)
         {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
+using OpenDoors.Api.Middleware;
 using OpenDoors.Api.Models;
 
 namespace OpenDoors.Api.Controllers
@@ -19,7 +20,9 @@ namespace OpenDoors.Api.Controllers
 
         // ===========================================
         // GET /api/matches — Lista TODOS os matches
+        // Apenas estudantes podem acessar
         // ===========================================
+        [AuthorizeRole(TiposUsuario.Estudante)]
         [HttpGet]
         public async Task<IActionResult> ListarTodos()
         {
@@ -37,7 +40,9 @@ namespace OpenDoors.Api.Controllers
 
         // ===========================================
         // GET /api/matches/{id} — Busca um match específico
+        // Apenas estudantes podem acessar
         // ===========================================
+        [AuthorizeRole(TiposUsuario.Estudante)]
         [HttpGet("{id}")]
         public async Task<IActionResult> BuscarPorId(int id)
         {
@@ -63,7 +68,9 @@ namespace OpenDoors.Api.Controllers
         // GET /api/matches/estudante/{estudanteId}
         // Matches que o estudante recebeu (ordenado por score do maior pro menor)
         // É a "lista de recomendações" pro estudante
+        // Apenas estudantes podem acessar
         // ===========================================
+        [AuthorizeRole(TiposUsuario.Estudante)]
         [HttpGet("estudante/{estudanteId}")]
         public async Task<IActionResult> ListarPorEstudante(Guid estudanteId)
         {
@@ -109,7 +116,9 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // GET /api/matches/top/{estudanteId}
         // Top 5 melhores matches pro estudante (página inicial dele!)
+        // Apenas estudantes podem acessar
         // ===========================================
+        [AuthorizeRole(TiposUsuario.Estudante)]
         [HttpGet("top/{estudanteId}")]
         public async Task<IActionResult> TopMatchesEstudante(Guid estudanteId)
         {
@@ -133,7 +142,9 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // GET /api/matches/excelentes
         // Matches com score acima de 80 (recomendações fortíssimas)
+        // Apenas estudantes podem acessar
         // ===========================================
+        [AuthorizeRole(TiposUsuario.Estudante)]
         [HttpGet("excelentes")]
         public async Task<IActionResult> ListarExcelentes()
         {
@@ -154,7 +165,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // POST /api/matches
-        // Endpoint usado pela IA (próxima etapa) pra gravar resultados de análise
+        // Endpoint usado pela IA para gravar resultados de análise
         [HttpPost]
         public async Task<IActionResult> Criar([FromBody] CreateMatchDto dto)
         {

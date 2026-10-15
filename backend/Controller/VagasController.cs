@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
+using OpenDoors.Api.Middleware;
 using OpenDoors.Api.Models;
 
 namespace OpenDoors.Api.Controllers
@@ -18,6 +20,7 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // GET /api/vagas — Lista TODAS as vagas
         // ===========================================
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> ListarTodas()
         {
@@ -41,6 +44,7 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // GET /api/vagas/abertas — Lista só as vagas ABERTAS
         // ===========================================
+        [AllowAnonymous]
         [HttpGet("abertas")]
         public async Task<IActionResult> ListarAbertas()
         {
@@ -64,6 +68,7 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // GET /api/vagas/empresa/{empresaId} — Vagas de UMA empresa
         // ===========================================
+        [AllowAnonymous]
         [HttpGet("empresa/{empresaId}")]
         public async Task<IActionResult> ListarPorEmpresa(Guid empresaId)
         {
@@ -87,6 +92,7 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // GET /api/vagas/{id} — Busca UMA vaga específica
         // ===========================================
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> BuscarPorId(int id)
         {
@@ -111,6 +117,8 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // POST /api/vagas — Cria uma nova vaga
         // ===========================================
+        [Authorize]
+        [AuthorizeRole(TiposUsuario.Empresa)]
         [HttpPost]
         public async Task<IActionResult> Criar([FromBody] CreateVagaDto dto)
         {
@@ -166,6 +174,8 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // PUT /api/vagas/{id} — Atualiza uma vaga existente
         // ===========================================
+        [Authorize]
+        [AuthorizeRole(TiposUsuario.Empresa)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Atualizar(int id, [FromBody] CreateVagaDto dto)
         {
@@ -212,6 +222,8 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // PATCH /api/vagas/{id}/status — Atualiza só o status
         // ===========================================
+        [Authorize]
+        [AuthorizeRole(TiposUsuario.Empresa)]
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> AtualizarStatus(int id, [FromBody] string novoStatus)
         {
@@ -238,6 +250,8 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // DELETE /api/vagas/{id} — Deleta uma vaga
         // ===========================================
+        [Authorize]
+        [AuthorizeRole(TiposUsuario.Empresa)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Deletar(int id)
         {

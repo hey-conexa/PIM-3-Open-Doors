@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
+using OpenDoors.Api.Middleware;
 using OpenDoors.Api.Models;
 using OpenDoors.Api.Services;
 
@@ -31,7 +32,9 @@ namespace OpenDoors.Api.Controllers
         // ===========================================
         // POST /api/ia/analisar-curriculo
         // Recebe PDF via form-data, extrai habilidades
+        // Apenas estudantes podem usar este endpoint
         // ===========================================
+        [AuthorizeRole(TiposUsuario.Estudante)]
         [HttpPost("analisar-curriculo")]
         public async Task<IActionResult> AnalisarCurriculo(
             [FromForm] Guid estudanteId,
@@ -199,7 +202,7 @@ namespace OpenDoors.Api.Controllers
         public async Task<IActionResult> GerarScore([FromBody] GerarScoreRequestDto body)
         {
             if (body.EstudanteId == Guid.Empty || body.VagaId == 0)
-                return BadRequest(new { erro = "estudanteId e vagaId são obrigatórios" });
+                return BadRequest(new { erro = "EstudanteId e VagaId são obrigatórios" });
 
             try
             {
@@ -210,13 +213,9 @@ namespace OpenDoors.Api.Controllers
             {
                 return NotFound(new { erro = ex.Message });
             }
-            catch (InvalidOperationException ex)
-            {
-                return UnprocessableEntity(new { erro = ex.Message });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { erro = "Erro interno ao gerar score.", detalhe = ex.Message });
+                return StatusCode(500, new { erro = ex.Message });
             }
         }
     }

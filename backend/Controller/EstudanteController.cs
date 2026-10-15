@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
+using OpenDoors.Api.Middleware;
 using OpenDoors.Api.Models;
 using OpenDoors.Api.Services;
 
@@ -21,6 +22,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // GET /api/estudantes
+        [AuthorizeRole(TiposUsuario.Estudante, TiposUsuario.Empresa)]
         [HttpGet]
         public async Task<IActionResult> ListarTodos()
         {
@@ -37,6 +39,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // GET /api/estudantes/ativos
+        [AuthorizeRole(TiposUsuario.Estudante, TiposUsuario.Empresa)]
         [HttpGet("ativos")]
         public async Task<IActionResult> ListarAtivos()
         {
@@ -79,6 +82,7 @@ namespace OpenDoors.Api.Controllers
         }
 
         // POST /api/estudantes
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Criar([FromBody] CreateEstudanteDto dto)
         {
@@ -163,6 +167,8 @@ namespace OpenDoors.Api.Controllers
         }
 
         // PUT /api/estudantes/{id}
+        [AuthorizeRole(TiposUsuario.Estudante)]
+        [AuthorizeOwner("id")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Atualizar(Guid id, [FromBody] CreateEstudanteDto dto)
         {
@@ -205,6 +211,8 @@ namespace OpenDoors.Api.Controllers
         }
 
         // DELETE /api/estudantes/{id}
+        [AuthorizeRole(TiposUsuario.Estudante)]
+        [AuthorizeOwner("id")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Deletar(Guid id)
         {
