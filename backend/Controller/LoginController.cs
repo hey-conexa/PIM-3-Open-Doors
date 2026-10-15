@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
-using OpenDoors.Api.Models;
+using OpenDoors.Api.Exceptions;
+using OpenDoors.Api.Services;
 
 namespace OpenDoors.Api.Controllers
 {
@@ -9,11 +10,11 @@ namespace OpenDoors.Api.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly Supabase.Client _supabase;
+        private readonly LoginService _loginService;
 
-        public LoginController(Supabase.Client supabase)
+        public LoginController(LoginService loginService)
         {
-            _supabase = supabase;
+            _loginService = loginService;
         }
 
         // POST /api/login
@@ -23,8 +24,16 @@ namespace OpenDoors.Api.Controllers
         {
             try
             {
-                // Lógica de login será implementada aqui
-                return Ok();
+                var response = await _loginService.AutenticarAsync(dto);
+                return Ok(response);
+            }
+            catch (MissingRequiredFieldException ex)
+            {
+                return BadRequest(new { erro = ex.Message });
+            }
+            catch (InvalidCredentialsException ex)
+            {
+                return Unauthorized(new { erro = ex.Message });
             }
             catch (Exception ex)
             {

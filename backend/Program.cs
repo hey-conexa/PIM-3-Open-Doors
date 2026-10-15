@@ -104,6 +104,7 @@ builder.Services.AddHttpClient<OpenDoors.Api.Services.JoobleService>();
 builder.Services.AddScoped<OpenDoors.Api.Services.JoobleService>();
 
 builder.Services.AddScoped<OpenDoors.Api.Services.JwtService>();
+builder.Services.AddScoped<OpenDoors.Api.Services.LoginService>();
 
 // ============================================
 // CONSTRUÇÃO E EXECUÇÃO DO APP
