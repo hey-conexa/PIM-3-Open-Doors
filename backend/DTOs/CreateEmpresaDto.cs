@@ -12,6 +12,7 @@ namespace OpenDoors.Api.DTOs
         public string? NomeFantasia { get; set; }
         public string Cnpj { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string Senha { get; set; } = string.Empty;
         public string? Telefone { get; set; }
         public string? Site { get; set; }
         public string? LogoUrl { get; set; }

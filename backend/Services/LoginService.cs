@@ -1,6 +1,7 @@
-using OpenDoors.Api.DTOs;
 using OpenDoors.Api.Exceptions;
 using OpenDoors.Api.Models;
+using OpenDoors.Api.DTOs;
+using BCrypt.Net;
 
 namespace OpenDoors.Api.Services
 {
@@ -51,9 +52,8 @@ namespace OpenDoors.Api.Services
             if (!loginResult.Email.Equals(dto.Email, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidCredentialsException();
 
-            // Compara a senha informada com a armazenada
-            // NOTA: Se a senha estiver com hash, utilize BCrypt.Net.BCrypt.Verify() aqui
-            if (!loginResult.Senha.Equals(dto.Senha, StringComparison.Ordinal))
+            // Verifica a senha utilizando BCrypt
+            if (!BCrypt.Net.BCrypt.Verify(dto.Senha, loginResult.Senha))
                 throw new InvalidCredentialsException();
 
             // Gera o token JWT
@@ -61,6 +61,45 @@ namespace OpenDoors.Api.Services
 
             // Retorna o DTO com o token
             return new LoginResponseDto { Token = token };
+        }
+
+        /// <summary>
+        /// Cria um novo registro de Login no banco de dados.
+        /// </summary>
+        /// <param name="dto">DTO contendo informações do novo login (ContaId, Email, Senha, TipoUsuario)</param>
+        /// <returns>Objeto Login criado</returns>
+        /// <exception cref="MissingRequiredFieldException">Quando campos obrigatórios estão ausentes</exception>
+        public async Task<Login> CriarLoginAsync(CreateLoginDto dto)
+        {
+            // Validação de campos obrigatórios
+            if (dto.ContaId == Guid.Empty)
+                throw new MissingRequiredFieldException("ContaId");
+
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                throw new MissingRequiredFieldException("Email");
+
+            if (string.IsNullOrWhiteSpace(dto.Senha))
+                throw new MissingRequiredFieldException("Senha");
+
+            // Criptografa a senha usando BCrypt
+            var senhaHasheada = BCrypt.Net.BCrypt.HashPassword(dto.Senha);
+
+            // Cria novo registro de Login
+            var novoLogin = new Login
+            {
+                ContaId = dto.ContaId,
+                Email = dto.Email,
+                Senha = senhaHasheada,
+                TipoUsuario = dto.TipoUsuario
+            };
+
+            // Insere no banco de dados
+            var resultado = await _supabase.From<Login>().Insert(novoLogin);
+
+            if (resultado.Models == null || resultado.Models.Count == 0)
+                throw new Exception("Falha ao criar login");
+
+            return resultado.Models[0];
         }
     }
 }

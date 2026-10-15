@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenDoors.Api.DTOs;
 using OpenDoors.Api.Models;
+using OpenDoors.Api.Services;
 
 namespace OpenDoors.Api.Controllers
 {
@@ -11,10 +12,12 @@ namespace OpenDoors.Api.Controllers
     public class EmpresasController : ControllerBase
     {
         private readonly Supabase.Client _supabase;
+        private readonly LoginService _loginService;
 
-        public EmpresasController(Supabase.Client supabase)
+        public EmpresasController(Supabase.Client supabase, LoginService loginService)
         {
             _supabase = supabase;
+            _loginService = loginService;
         }
 
         // GET /api/empresas
@@ -92,6 +95,9 @@ namespace OpenDoors.Api.Controllers
                 if (string.IsNullOrWhiteSpace(dto.Email))
                     return BadRequest(new { erro = "Email é obrigatório" });
 
+                if (string.IsNullOrWhiteSpace(dto.Senha))
+                    return BadRequest(new { erro = "Senha é obrigatória" });
+
                 var nova = new Empresa
                 {
                     Id = dto.Id,
@@ -122,6 +128,26 @@ namespace OpenDoors.Api.Controllers
                     return StatusCode(500, new { erro = "Falha ao criar empresa" });
 
                 var criada = MapearParaDto(resultado.Models[0]);
+
+                // Cria o login para a nova empresa
+                try
+                {
+                    var createLoginDto = new CreateLoginDto
+                    {
+                        ContaId = dto.Id,
+                        Email = dto.Email,
+                        Senha = dto.Senha,
+                        TipoUsuario = TiposUsuario.Empresa
+                    };
+
+                    await _loginService.CriarLoginAsync(createLoginDto);
+                }
+                catch (Exception ex)
+                {
+                    // Log do erro de criação de login, mas não impede a criação da empresa
+                    System.Diagnostics.Debug.WriteLine($"Erro ao criar login para empresa: {ex.Message}");
+                }
+
                 return CreatedAtAction(nameof(BuscarPorId), new { id = criada.Id }, criada);
             }
             catch (Exception ex)

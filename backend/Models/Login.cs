@@ -23,7 +23,7 @@ namespace OpenDoors.Api.Models
         public string Senha { get; set; }
 
         [Column("tipo_usuario")]
-        public TiposUsuario TipoUsuario { get; set; }
+        public TiposUsuario TipoUsuario { get; set; } = new TiposUsuario();
     }
 
     public enum TiposUsuario
