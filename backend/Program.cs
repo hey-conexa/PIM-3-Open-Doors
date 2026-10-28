@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenDoors.Api.Infrastructure.Database;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,23 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
+});
+
+// ============================================
+// CONFIGURAÇÃO DO ENTITY FRAMEWORK CORE
+// ============================================
+
+// Registra o AppDbContext com SQL Server
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new Exception("Connection string 'DefaultConnection' não foi encontrada! Verifique appsettings.json e appsettings.Development.json");
+}
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
 });
 
 // ============================================
