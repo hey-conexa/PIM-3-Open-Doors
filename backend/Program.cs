@@ -33,10 +33,10 @@ builder.Services.AddCors(options =>
 });
 
 // ============================================
-// CONFIGURAÇÃO DO ENTITY FRAMEWORK CORE
+// CONFIGURAÇÃO DO ENTITY FRAMEWORK CORE (PostgreSQL)
 // ============================================
 
-// Registra o AppDbContext com SQL Server
+// Registra o AppDbContext com PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrEmpty(connectionString))
@@ -46,7 +46,7 @@ if (string.IsNullOrEmpty(connectionString))
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(connectionString);
+    options.UseNpgsql(connectionString);
 });
 
 // ============================================
